@@ -38,8 +38,43 @@ class ClipSurfaceManager:
 
 class Menu:
     """Menu"""
-    def __init__(self):
-        pass
+    def __init__(self, dimension):
+        self.height=dimension[1]
+        self.width=dimension[0]
+        self.surface=pygame.Surface(dimension)
+        self.banner=pygame.Rect(0,self.height, self.width,self.height)
+        self.animation_show=False
+        self.animation_hide=False
+
+    def show_menu(self):
+        self.animation_hide=False
+        self.animation_show=True
+
+    def hide_menu(self):
+        self.animation_hide=True
+        self.animation_show=False
+
+    def update(self):
+        if self.animation_show is True:
+            if self.banner.top < 0:
+                self.banner.top=0
+                self.animation_show=False
+            else:
+                self.banner.move_ip(0,-2)
+        
+        if self.animation_hide is True:
+            if self.banner.top >= self.height:
+                self.banner.top=self.height
+                self.animation_hide=False
+            else:
+                self.banner.move_ip(0,2)
+
+
+    def get_surface(self):
+        self.surface.fill(pygame.Color(50,100,100))
+        pygame.draw.rect(self.surface, pygame.Color(0,50,50), menu.banner)
+        return self.surface
+
     
 
 # Initialize Pygame
@@ -50,9 +85,15 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 video1=Clip("CLIP1",os.path.join(dir_path,"assets","abba.mp4"),40,42)
 video2=Clip("CLIP2",os.path.join(dir_path,"assets","abba.mp4"),50,52)
 clip_surface_manager=ClipSurfaceManager(video1)
+screen_size=clip_surface_manager.get_surface().get_size()
+
+
+# init menu
+menu=Menu(dimension=(screen_size[0]-20,50))
 
 # Prepare SCREEN
-screen = pygame.display.set_mode(clip_surface_manager.get_surface().get_size(), 0, 32)
+screen = pygame.display.set_mode(screen_size, 0, 32)
+pygame.display.set_caption("ABBA test")
 
 # Run the Pygame loop to keep the window open
 running = True
@@ -68,13 +109,20 @@ while running:
             clip_surface_manager.next_clip=video1
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
             clip_surface_manager.next_clip=video2
-
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_m:
+            menu.show_menu()
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_l:
+            menu.hide_menu()
           
     # update objects
     clip_surface_manager.update()
+    menu.update()
+
 
     # Draw the surface onto the window
     screen.blit(clip_surface_manager.get_surface(), (0, 0))
+    screen.blit(menu.get_surface(), ((screen_size[0]-menu.width)/2, screen_size[1]-menu.height))
+   
     pygame.display.flip()
     
 # Quit Pygame

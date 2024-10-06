@@ -19,3 +19,5 @@ python -m pip install moviepy
 - https://numerique.ostralo.net/pygame/partie4_les_objets_de_type_surface/b_dessiner.htm
 - https://stackoverflow.com/questions/61578694/difference-between-rect-move-and-rect-move-ip-in-pygame
 - https://www.reddit.com/r/pygame/comments/wpotwv/how_do_i_make_an_entity_move_forward_relative_to/
+- https://www.pygame.org/docs/ref/rect.html#pygame.Rect.collideobjects
+
