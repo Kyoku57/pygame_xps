@@ -1,5 +1,13 @@
 # Some experiment with PyGame
 
+## Install
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install pygame
+python -m pip install moviepy
+```
+
 ## Random links
 
 - https://ryanstutorials.net/pygame-tutorial/pygame-keyboard-input.php
