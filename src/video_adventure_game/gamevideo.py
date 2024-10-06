@@ -107,8 +107,8 @@ pygame.init()
 assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
 cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
 
-video1=Clip("CLIP1",assets_dir,cache_dir,"abba.mp4",40,42)
-video2=Clip("CLIP2",assets_dir,cache_dir,"abba.mp4",50,52)
+video1=Clip("CLIP1",assets_dir,cache_dir,"abba.mp4",35,43)
+video2=Clip("CLIP2",assets_dir,cache_dir,"abba.mp4",45,52)
 
 clip_manager=ClipManager(video1)
 screen_size=clip_manager.get_surface().get_size()
