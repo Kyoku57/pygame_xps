@@ -56,7 +56,7 @@ class Menu:
 
     def update(self):
         if self.animation_show is True:
-            if self.banner.top < 0:
+            if self.banner.top-2 < 0:
                 self.banner.top=0
                 self.animation_show=False
             else:
