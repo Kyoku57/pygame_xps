@@ -37,10 +37,10 @@ class Clip:
 
 class ClipManager:
     """Object that manage which clip to render"""
-    def __init__(self, clip):
+    def __init__(self, first_clip):
         self.first_launch=True
-        self.current_clip=clip
-        self.next_clip=clip
+        self.current_clip=first_clip
+        self.next_clip=first_clip
         self.surface=pygame.surfarray.make_surface(self.current_clip.frame.swapaxes(0, 1))
 
     def update(self):
@@ -56,8 +56,9 @@ class ClipManager:
         return self.surface
     
     def play_associated_audio(self):
-        pygame.mixer.music.load(self.current_clip.audio_filename)
-        pygame.mixer.music.play()
+        current_audio=pygame.mixer.Sound(self.current_clip.audio_filename)
+        current_audio.play()
+        
 
 class Menu:
     """Menu"""
