@@ -7,8 +7,7 @@ class Clip:
     def __init__(self, id, assets_path, cache_path, filename, start, end):
         # time-management
         self.id=id
-        self.start=start
-        self.end=end
+        self.start,self.end=start,end
         self.time=start
         # path
         self.assets_path=assets_path
@@ -19,20 +18,24 @@ class Clip:
         self.clip=VideoFileClip(self.video_path)
         self.frame=self.clip.get_frame(t=self.time)
         # audio
-        self.audio_filename=os.path.join(cache_path,self.filename+"."+self.id+"."+str(self.start)+"."+str(self.end)+".wav")
-        if not os.path.exists(self.audio_filename):
-            self.clip.subclip(self.start, self.end).audio.write_audiofile(self.audio_filename)
-        else:
-            print(f"{self.audio_filename} already cached !")
-
+        self.cache_audio()
+       
     def update_and_return_isfinished(self):
-        """Obtenir la bonne frame du clip"""
+        """Obtain the right frame"""
         self.time += 1/25
         is_finished = self.time > self.end
         if is_finished:
             self.time = self.start
         self.frame=self.clip.get_frame(t=self.time)
         return is_finished
+    
+    def cache_audio(self):
+        """Extract and create audio cache for the clip"""
+        self.audio_filename=os.path.join(self.cache_path,self.id+"."+self.filename+"."+str(self.start)+"."+str(self.end)+".wav")
+        if not os.path.exists(self.audio_filename):
+            self.clip.subclip(self.start, self.end).audio.write_audiofile(self.audio_filename)
+        else:
+            print(f"{self.audio_filename} already cached !")
 
 
 class ClipManager:
@@ -44,6 +47,7 @@ class ClipManager:
         self.surface=pygame.surfarray.make_surface(self.current_clip.frame.swapaxes(0, 1))
 
     def update(self):
+        """Update frame for Surface buffer and play audio if necessary"""
         if self.first_launch is True:
             self.play_associated_audio()
             self.first_launch=False
@@ -52,10 +56,12 @@ class ClipManager:
             self.play_associated_audio()
 
     def get_surface(self):
+        """Export updated Surface"""
         pygame.surfarray.blit_array(self.surface, self.current_clip.frame.swapaxes(0, 1))
         return self.surface
     
     def play_associated_audio(self):
+        """Play audio"""
         current_audio=pygame.mixer.Sound(self.current_clip.audio_filename)
         current_audio.play()
         
@@ -139,14 +145,13 @@ while running:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_l:
             menu.hide_menu()
           
-    # update objects
+    # update objects to draw
     clip_manager.update()
     menu.update()
 
     # Draw the surface onto the window
     screen.blit(clip_manager.get_surface(), (0, 0))
     screen.blit(menu.get_surface(), ((screen_size[0]-menu.width)/2, screen_size[1]-menu.height))
-   
     pygame.display.flip()
     
 # Quit Pygame
