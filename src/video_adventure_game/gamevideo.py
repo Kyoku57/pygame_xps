@@ -3,6 +3,7 @@ from moviepy.editor import VideoFileClip
 from enum import Enum
 
 class Clip:
+    """Clip that represent a subset of a video"""
     def __init__(self, id, video_path, start, end):
         self.id=id
         self.video_path=video_path
@@ -21,6 +22,7 @@ class Clip:
         return is_finished
 
 class ClipSurfaceManager:
+    """Object that manage which clip to render"""
     def __init__(self, clip):
         self.current_clip=clip
         self.next_clip=clip
@@ -30,13 +32,15 @@ class ClipSurfaceManager:
         if self.current_clip.update():
             self.current_clip=self.next_clip
 
-    def getSurface(self):
+    def get_surface(self):
         pygame.surfarray.blit_array(self.surface, self.current_clip.frame.swapaxes(0, 1))
         return self.surface
 
 class Menu:
+    """Menu"""
     def __init__(self):
         pass
+    
 
 # Initialize Pygame
 pygame.init()
@@ -45,13 +49,10 @@ pygame.init()
 dir_path = os.path.dirname(os.path.realpath(__file__))
 video1=Clip("CLIP1",os.path.join(dir_path,"assets","abba.mp4"),40,42)
 video2=Clip("CLIP2",os.path.join(dir_path,"assets","abba.mp4"),50,52)
-manager=ClipSurfaceManager(video1)
-
-# Create a RECT 
-carree=pygame.Rect(0,0,100,100)
+clip_surface_manager=ClipSurfaceManager(video1)
 
 # Prepare SCREEN
-screen = pygame.display.set_mode(manager.getSurface().get_size(), 0, 32)
+screen = pygame.display.set_mode(clip_surface_manager.get_surface().get_size(), 0, 32)
 
 # Run the Pygame loop to keep the window open
 running = True
@@ -64,23 +65,16 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-            manager.next_clip=video1
+            clip_surface_manager.next_clip=video1
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-            manager.next_clip=video2
+            clip_surface_manager.next_clip=video2
 
-    # other way to check events
-    pressed=pygame.key.get_pressed()
-    if pressed[pygame.K_LEFT]:
-        carree.move_ip(-2,0)
-    if pressed[pygame.K_RIGHT]:
-        carree.move_ip(2,0)
-        
+          
     # update objects
-    manager.update()
+    clip_surface_manager.update()
 
     # Draw the surface onto the window
-    screen.blit(manager.getSurface(), (0, 0))
-    pygame.draw.rect(screen, pygame.Color(200,0,0), carree)
+    screen.blit(clip_surface_manager.get_surface(), (0, 0))
     pygame.display.flip()
     
 # Quit Pygame
