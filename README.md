@@ -20,4 +20,5 @@ python -m pip install moviepy
 - https://stackoverflow.com/questions/61578694/difference-between-rect-move-and-rect-move-ip-in-pygame
 - https://www.reddit.com/r/pygame/comments/wpotwv/how_do_i_make_an_entity_move_forward_relative_to/
 - https://www.pygame.org/docs/ref/rect.html#pygame.Rect.collideobjects
+- https://medium.com/featurepreneur/extracting-audio-from-video-using-pythons-moviepy-library-e351cd652ab8 
 
