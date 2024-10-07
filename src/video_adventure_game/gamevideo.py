@@ -43,7 +43,7 @@ class Clip:
         if self.audio is None:
             self.audio=pygame.mixer.Sound(self.audio_filename)
 
-    def get_progression(self):
+    def get_progress(self):
         return (self.time-self.start)*100/(self.end-self.start)
 
 
@@ -57,6 +57,11 @@ class ClipManager:
 
     def update(self):
         """Update frame for Surface buffer and play audio if necessary"""
+        if self.menu is not None:
+            if self.current_clip.get_progress() > 20:
+                self.menu.show()
+            if self.current_clip.get_progress() > 80:
+                self.menu.hide()
         if self.first_launch is True:
             self.play_associated_audio()
             self.first_launch=False
@@ -72,6 +77,9 @@ class ClipManager:
     def play_associated_audio(self):
         """Play audio"""
         self.current_clip.audio.play()
+
+    def set_menu(self, menu):
+        self.menu=menu
         
 
 class Menu:
@@ -79,7 +87,7 @@ class Menu:
     def __init__(self, dimension):
         self.height=dimension[1]
         self.width=dimension[0]
-        self.surface=pygame.Surface(dimension)
+        self.surface=pygame.Surface(dimension, pygame.SRCALPHA)
         self.banner=pygame.Rect(0,self.height, self.width,self.height)
         self.visible=False
         self.animation_show=False
@@ -117,8 +125,9 @@ class Menu:
                 self.banner.move_ip(0,2)
 
     def get_surface(self):
-        self.surface.fill(pygame.Color(50,100,100))
-        pygame.draw.rect(self.surface, pygame.Color(0,50,50), menu.banner)
+        self.surface.fill(pygame.SRCALPHA)
+        self.surface=self.surface.convert_alpha()
+        pygame.draw.rect(self.surface, pygame.Color(0,50,80), menu.banner)
         return self.surface
 
     
@@ -135,11 +144,13 @@ weathly_men_video=Clip("WEATHLY_MEN_CLIP1",assets_dir,cache_dir,"abba.mp4",33.5,
 money_money_video=Clip("MONEY_MONEY_CLIP2",assets_dir,cache_dir,"abba.mp4",48,55)
 aahhhaahhhh_video=Clip("Aahhhaahhhh_CLIP3",assets_dir,cache_dir,"abba.mp4",133,146)
 
+
 clip_manager=ClipManager(weathly_men_video)
 screen_size=clip_manager.get_surface().get_size()
 
 # init menu
-menu=Menu(dimension=(screen_size[0]-20,50))
+menu=Menu(dimension=(screen_size[0]-50,60))
+clip_manager.set_menu(menu)
 
 # Prepare SCREEN
 screen=pygame.display.set_mode(screen_size, 0, 32)
@@ -182,7 +193,7 @@ while running:
     screen.blit(menu.get_surface(), ((screen_size[0]-menu.width)/2, screen_size[1]-menu.height))
     pygame.display.flip()
 
-    print(clip_manager.current_clip.get_progression())
+    print(clip_manager.current_clip.get_progress())
     
 # Quit Pygame
 pygame.quit()
