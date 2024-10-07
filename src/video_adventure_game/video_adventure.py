@@ -94,7 +94,7 @@ class Menu:
         self.height=dimension[1]
         self.width=dimension[0]
         self.surface=pygame.Surface(dimension, pygame.SRCALPHA)
-        self.banner=pygame.Rect(0,self.height, self.width,self.height)
+        self.banner=pygame.Rect(0, self.height, self.width, self.height)
         self.visible=False
         self.animation_show=False
         self.animation_hide=False
@@ -133,7 +133,7 @@ class Menu:
     def get_surface(self):
         self.surface.fill(pygame.SRCALPHA)
         self.surface=self.surface.convert_alpha()
-        pygame.draw.rect(self.surface, pygame.Color(0,50,80), menu.banner)
+        pygame.draw.rect(self.surface, pygame.Color(0,50,80), self.banner,0,10,10,10,10)
         return self.surface
 
 
