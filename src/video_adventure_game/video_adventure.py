@@ -24,6 +24,9 @@ class Clip:
         self.audio_filename=os.path.join(self.cache_path,
             self.id+"."+self.filename+"."+str(self.start)+"."+str(self.end)+".wav")
         self.cache_audio()
+
+    def reset(self):
+        self.time=0
        
     def update_and_return_isfinished(self):
         """Obtain the right frame"""
@@ -31,7 +34,7 @@ class Clip:
         self.time += 1/25
         is_finished = self.time > self.duration
         if is_finished:
-            self.time = 0
+            self.reset()
         return is_finished
     
     def cache_audio(self):
@@ -133,7 +136,38 @@ class Menu:
         pygame.draw.rect(self.surface, pygame.Color(0,50,80), menu.banner)
         return self.surface
 
+
+class ClipResources:
+    """List of clips"""
+    def __init__(self):
+        self.clips = {}
+
+    def add(self, clip):
+        if clip.id in self.clips.keys():
+            raise NameError(f"{clip.id} is already used !!!")
+        self.clips[clip.id]=clip
+
+    def get(self, clip_id):
+        if clip_id not in self.clips.keys():
+            raise NameError(f"{clip_id} is not in resources !!!")
+        return self.clips[clip_id]
+
+class Choice:
+    pass
+
+class Scene:
+    def __init__(self, clips_resources):
+        self.ordered_clips=[]
+        self.choices=[]
+        self.clips_resources=clips_resources
+
+    def add_clip(self, clip_id):
+        clip=self.clips_resources.get(clip_id)
+        self.ordered_clips.append(clip)
     
+    def get_duration(self):
+        return sum([clip.duration for clip in self.ordered_clips])
+
 
 # Initialize Pygame
 pygame.init()
@@ -143,12 +177,33 @@ assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
 cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
 
 # Clip management
-weathly_men_video=Clip("WEATHLY_MEN_CLIP1",assets_dir,cache_dir,"abba.mp4",33.5,43)
-money_money_video=Clip("MONEY_MONEY_CLIP2",assets_dir,cache_dir,"abba.mp4",48,55)
-aahhhaahhhh_video=Clip("Aahhhaahhhh_CLIP3",assets_dir,cache_dir,"abba.mp4",133,146)
+clips=ClipResources()
+clips.add(Clip("PIANO",assets_dir,cache_dir,"abba.mp4",1,9.5))
+clips.add(Clip("I_WORK_ALL_NIGHT",assets_dir,cache_dir,"abba.mp4",13,29))
+clips.add(Clip("WEATHLY_MEN",assets_dir,cache_dir,"abba.mp4",33.5,43))
+clips.add(Clip("MONEY_MONEY",assets_dir,cache_dir,"abba.mp4",48,63))
+clips.add(Clip("AHHHHHHHHHH",assets_dir,cache_dir,"abba.mp4",133.5,146))
+clips.add(Clip("HIGHER",assets_dir,cache_dir,"abba.mp4",149.5,165))
 
+# Create scenes
+scene1=Scene(clips)
+scene1.add_clip("PIANO")
+scene1.add_clip("I_WORK_ALL_NIGHT")
 
-clip_manager=ClipManager(weathly_men_video)
+scene2=Scene(clips)
+scene2.add_clip("WEATHLY_MEN")
+scene2.add_clip("MONEY_MONEY")
+
+scene3=Scene(clips)
+scene3.add_clip("AHHHHHHHHHH")
+scene3.add_clip("HIGHER")
+
+print(f"scene1 is about {scene1.get_duration()} seconds")
+print(f"scene2 is about {scene2.get_duration()} seconds")
+print(f"scene3 is about {scene3.get_duration()} seconds")
+
+# ClipManagement
+clip_manager=ClipManager(clips.get("WEATHLY_MEN"))
 screen_size=clip_manager.get_surface().get_size()
 
 # init menu
@@ -174,15 +229,24 @@ while running:
         # choose clip extract
         if clip_manager.show_menu:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
-                clip_manager.next_clip=weathly_men_video
+                clip_manager.next_clip=clips.get("PIANO")
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_x:
-                clip_manager.next_clip=money_money_video
+                clip_manager.next_clip=clips.get("I_WORK_ALL_NIGHT")
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
-                clip_manager.next_clip=aahhhaahhhh_video
+                clip_manager.next_clip=clips.get("WEATHLY_MEN")
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_v:
+                clip_manager.next_clip=clips.get("MONEY_MONEY")
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_b:
+                clip_manager.next_clip=clips.get("AHHHHHHHHHH")
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_n:
+                clip_manager.next_clip=clips.get("HIGHER")
           
     # update objects to draw
     clip_manager.update()
-    menu.show() if clip_manager.show_menu else menu.hide()
+    if clip_manager.show_menu:
+        menu.show() 
+    else: 
+        menu.hide()
     menu.update()
 
     # Draw the surface onto the window
