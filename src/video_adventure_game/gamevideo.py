@@ -43,9 +43,6 @@ class Clip:
         if self.audio is None:
             self.audio=pygame.mixer.Sound(self.audio_filename)
 
-    def get_progress(self):
-        return (self.time-self.start)*100/(self.end-self.start)
-
 
 class ClipManager:
     """Object that manage which clip to render"""
@@ -54,20 +51,20 @@ class ClipManager:
         self.current_clip=first_clip
         self.next_clip=first_clip
         self.surface=pygame.surfarray.make_surface(self.current_clip.frame.swapaxes(0, 1))
+        self.show_menu=False
 
     def update(self):
         """Update frame for Surface buffer and play audio if necessary"""
-        if self.menu is not None:
-            if self.current_clip.get_progress() > 20:
-                self.menu.show()
-            if self.current_clip.get_progress() > 80:
-                self.menu.hide()
         if self.first_launch is True:
             self.play_associated_audio()
             self.first_launch=False
         if self.current_clip.update_and_return_isfinished():
             self.current_clip=self.next_clip
             self.play_associated_audio()
+        if self.get_progress() > 20:
+            self.show_menu=True
+        if self.get_progress() > 80:
+            self.show_menu=False
 
     def get_surface(self):
         """Export updated Surface"""
@@ -78,8 +75,8 @@ class ClipManager:
         """Play audio"""
         self.current_clip.audio.play()
 
-    def set_menu(self, menu):
-        self.menu=menu
+    def get_progress(self):
+        return (self.current_clip.time-self.current_clip.start)*100/(self.current_clip.end-self.current_clip.start)
         
 
 class Menu:
@@ -150,7 +147,6 @@ screen_size=clip_manager.get_surface().get_size()
 
 # init menu
 menu=Menu(dimension=(screen_size[0]-50,60))
-clip_manager.set_menu(menu)
 
 # Prepare SCREEN
 screen=pygame.display.set_mode(screen_size, 0, 32)
@@ -176,16 +172,10 @@ while running:
             clip_manager.next_clip=money_money_video
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
             clip_manager.next_clip=aahhhaahhhh_video
-        # menu interaction
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-            menu.show()
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_h:
-            menu.hide()
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_t:
-            menu.toggle()
           
     # update objects to draw
     clip_manager.update()
+    menu.show() if clip_manager.show_menu else menu.hide()
     menu.update()
 
     # Draw the surface onto the window
@@ -193,7 +183,7 @@ while running:
     screen.blit(menu.get_surface(), ((screen_size[0]-menu.width)/2, screen_size[1]-menu.height))
     pygame.display.flip()
 
-    print(clip_manager.current_clip.get_progress())
+    print(clip_manager.get_progress())
     
 # Quit Pygame
 pygame.quit()
