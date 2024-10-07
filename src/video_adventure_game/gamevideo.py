@@ -18,6 +18,9 @@ class Clip:
         self.clip=VideoFileClip(self.video_path)
         self.frame=self.clip.get_frame(t=self.time)
         # audio
+        self.audio=None
+        self.audio_filename=os.path.join(self.cache_path,
+            self.id+"."+self.filename+"."+str(self.start)+"."+str(self.end)+".wav")
         self.cache_audio()
        
     def update_and_return_isfinished(self):
@@ -31,11 +34,17 @@ class Clip:
     
     def cache_audio(self):
         """Extract and create audio cache for the clip"""
-        self.audio_filename=os.path.join(self.cache_path,self.id+"."+self.filename+"."+str(self.start)+"."+str(self.end)+".wav")
+        # cache intermediare file
         if not os.path.exists(self.audio_filename):
             self.clip.subclip(self.start, self.end).audio.write_audiofile(self.audio_filename)
         else:
             print(f"{self.audio_filename} already cached !")
+        # cache audio object
+        if self.audio is None:
+            self.audio=pygame.mixer.Sound(self.audio_filename)
+
+    def get_progression(self):
+        return (self.time-self.start)*100/(self.end-self.start)
 
 
 class ClipManager:
@@ -62,8 +71,7 @@ class ClipManager:
     
     def play_associated_audio(self):
         """Play audio"""
-        current_audio=pygame.mixer.Sound(self.current_clip.audio_filename)
-        current_audio.play()
+        self.current_clip.audio.play()
         
 
 class Menu:
@@ -73,14 +81,21 @@ class Menu:
         self.width=dimension[0]
         self.surface=pygame.Surface(dimension)
         self.banner=pygame.Rect(0,self.height, self.width,self.height)
+        self.visible=False
         self.animation_show=False
         self.animation_hide=False
+    
+    def toggle(self):
+        if self.visible is True:
+            self.hide()
+        else:
+            self.show()
 
-    def show_menu(self):
+    def show(self):
         self.animation_hide=False
         self.animation_show=True
 
-    def hide_menu(self):
+    def hide(self):
         self.animation_hide=True
         self.animation_show=False
 
@@ -89,6 +104,7 @@ class Menu:
             if self.banner.top-2 < 0:
                 self.banner.top=0
                 self.animation_show=False
+                self.visible=True
             else:
                 self.banner.move_ip(0,-2)
         
@@ -96,6 +112,7 @@ class Menu:
             if self.banner.top >= self.height:
                 self.banner.top=self.height
                 self.animation_hide=False
+                self.visible=False
             else:
                 self.banner.move_ip(0,2)
 
@@ -109,14 +126,16 @@ class Menu:
 # Initialize Pygame
 pygame.init()
 
-# Clip management
+# assets and cache
 assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
 cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
 
-video1=Clip("CLIP1",assets_dir,cache_dir,"abba.mp4",35,43)
-video2=Clip("CLIP2",assets_dir,cache_dir,"abba.mp4",45,52)
+# Clip management
+weathly_men_video=Clip("WEATHLY_MEN_CLIP1",assets_dir,cache_dir,"abba.mp4",33.5,43)
+money_money_video=Clip("MONEY_MONEY_CLIP2",assets_dir,cache_dir,"abba.mp4",48,55)
+aahhhaahhhh_video=Clip("Aahhhaahhhh_CLIP3",assets_dir,cache_dir,"abba.mp4",133,146)
 
-clip_manager=ClipManager(video1)
+clip_manager=ClipManager(weathly_men_video)
 screen_size=clip_manager.get_surface().get_size()
 
 # init menu
@@ -134,16 +153,25 @@ while running:
     
     # check for events
     for event in pygame.event.get():
+        # manage quit()
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-            clip_manager.next_clip=video1
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-            clip_manager.next_clip=video2
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_m:
-            menu.show_menu()
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_l:
-            menu.hide_menu()
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            running = False
+        # choose clip extract
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_w:
+            clip_manager.next_clip=weathly_men_video
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            clip_manager.next_clip=money_money_video
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+            clip_manager.next_clip=aahhhaahhhh_video
+        # menu interaction
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+            menu.show()
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_h:
+            menu.hide()
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_t:
+            menu.toggle()
           
     # update objects to draw
     clip_manager.update()
@@ -153,6 +181,8 @@ while running:
     screen.blit(clip_manager.get_surface(), (0, 0))
     screen.blit(menu.get_surface(), ((screen_size[0]-menu.width)/2, screen_size[1]-menu.height))
     pygame.display.flip()
+
+    print(clip_manager.current_clip.get_progression())
     
 # Quit Pygame
 pygame.quit()
