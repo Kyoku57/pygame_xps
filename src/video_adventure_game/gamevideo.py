@@ -8,7 +8,8 @@ class Clip:
         # time-management
         self.id=id
         self.start,self.end=start,end
-        self.time=start
+        self.duration=self.end-self.start
+        self.time=0
         # path
         self.assets_path=assets_path
         self.cache_path=cache_path
@@ -16,6 +17,7 @@ class Clip:
         # video
         self.video_path=os.path.join(assets_path,filename)
         self.clip=VideoFileClip(self.video_path)
+        self.clip=self.clip.subclip(self.start, self.end)
         self.frame=self.clip.get_frame(t=self.time)
         # audio
         self.audio=None
@@ -25,18 +27,18 @@ class Clip:
        
     def update_and_return_isfinished(self):
         """Obtain the right frame"""
-        self.time += 1/25
-        is_finished = self.time > self.end
-        if is_finished:
-            self.time = self.start
         self.frame=self.clip.get_frame(t=self.time)
+        self.time += 1/25
+        is_finished = self.time > self.duration
+        if is_finished:
+            self.time = 0
         return is_finished
     
     def cache_audio(self):
         """Extract and create audio cache for the clip"""
         # cache intermediare file
         if not os.path.exists(self.audio_filename):
-            self.clip.subclip(self.start, self.end).audio.write_audiofile(self.audio_filename)
+            self.clip.audio.write_audiofile(self.audio_filename)
         else:
             print(f"{self.audio_filename} already cached !")
         # cache audio object
@@ -61,6 +63,7 @@ class ClipManager:
         if self.current_clip.update_and_return_isfinished():
             self.current_clip=self.next_clip
             self.play_associated_audio()
+        # inform that the menu can be shown
         if self.get_progress() > 20:
             self.show_menu=True
         if self.get_progress() > 80:
@@ -76,7 +79,7 @@ class ClipManager:
         self.current_clip.audio.play()
 
     def get_progress(self):
-        return (self.current_clip.time-self.current_clip.start)*100/(self.current_clip.end-self.current_clip.start)
+        return (self.current_clip.time)*100/(self.current_clip.duration)
         
 
 class Menu:
