@@ -139,12 +139,20 @@ class Menu:
 
 class ClipResources:
     """List of clips"""
-    def __init__(self):
+    def __init__(self, assets_dir, cache_dir):
         self.clips = {}
+        self.assets_dir=assets_dir
+        self.cache_dir=cache_dir
 
     def add(self, clip):
         if clip.id in self.clips.keys():
             raise NameError(f"{clip.id} is already used !!!")
+        self.clips[clip.id]=clip
+
+    def add(self, clip_id, video_filename, start, end):
+        if clip_id in self.clips.keys():
+            raise NameError(f"{clip.id} is already used !!!")
+        clip=Clip(clip_id, assets_dir, cache_dir, video_filename, start, end)
         self.clips[clip.id]=clip
 
     def get(self, clip_id):
@@ -177,29 +185,28 @@ assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
 cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
 
 # Clip management
-clips=ClipResources()
-clips.add(Clip("PIANO",assets_dir,cache_dir,"abba.mp4",1,9.5))
-clips.add(Clip("I_WORK_ALL_NIGHT",assets_dir,cache_dir,"abba.mp4",13,29))
-clips.add(Clip("WEATHLY_MEN",assets_dir,cache_dir,"abba.mp4",33.5,43))
-clips.add(Clip("MONEY_MONEY",assets_dir,cache_dir,"abba.mp4",48,63))
-clips.add(Clip("AHHHHHHHHHH",assets_dir,cache_dir,"abba.mp4",133.5,146))
-clips.add(Clip("HIGHER",assets_dir,cache_dir,"abba.mp4",149.5,165))
+clips=ClipResources(assets_dir,cache_dir)
+clips.add("PIANO","abba.mp4",1,9.5)
+clips.add("I_WORK_ALL_NIGHT","abba.mp4",13,29)
+clips.add("WEATHLY_MEN","abba.mp4",33.5,43)
+clips.add("MONEY_MONEY","abba.mp4",48,63)
+clips.add("AHHHHHHHHHH","abba.mp4",133.5,146)
+clips.add("HIGHER","abba.mp4",149.5,165)
 
 # Create scenes
 scene1=Scene(clips)
 scene1.add_clip("PIANO")
 scene1.add_clip("I_WORK_ALL_NIGHT")
+print(f"scene1 is about {scene1.get_duration()} seconds")
 
 scene2=Scene(clips)
 scene2.add_clip("WEATHLY_MEN")
 scene2.add_clip("MONEY_MONEY")
+print(f"scene2 is about {scene2.get_duration()} seconds")
 
 scene3=Scene(clips)
 scene3.add_clip("AHHHHHHHHHH")
 scene3.add_clip("HIGHER")
-
-print(f"scene1 is about {scene1.get_duration()} seconds")
-print(f"scene2 is about {scene2.get_duration()} seconds")
 print(f"scene3 is about {scene3.get_duration()} seconds")
 
 # ClipManagement
