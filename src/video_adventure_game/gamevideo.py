@@ -14,7 +14,7 @@ class Clip:
         self.assets_path=assets_path
         self.cache_path=cache_path
         self.filename=filename
-        # video
+        # video subclip
         self.video_path=os.path.join(assets_path,filename)
         self.clip=VideoFileClip(self.video_path)
         self.clip=self.clip.subclip(self.start, self.end)
