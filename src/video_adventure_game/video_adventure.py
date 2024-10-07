@@ -80,6 +80,9 @@ class ClipManager:
 
     def get_progress(self):
         return (self.current_clip.time)*100/(self.current_clip.duration)
+    
+    def get_time_by_duration(self):
+        return self.current_clip.time, self.current_clip.duration
         
 
 class Menu:
@@ -169,12 +172,13 @@ while running:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
         # choose clip extract
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_w:
-            clip_manager.next_clip=weathly_men_video
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_x:
-            clip_manager.next_clip=money_money_video
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
-            clip_manager.next_clip=aahhhaahhhh_video
+        if clip_manager.show_menu:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
+                clip_manager.next_clip=weathly_men_video
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+                clip_manager.next_clip=money_money_video
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+                clip_manager.next_clip=aahhhaahhhh_video
           
     # update objects to draw
     clip_manager.update()
@@ -186,7 +190,11 @@ while running:
     screen.blit(menu.get_surface(), ((screen_size[0]-menu.width)/2, screen_size[1]-menu.height))
     pygame.display.flip()
 
-    print(clip_manager.get_progress())
+    # debug
+    time, duration=clip_manager.get_time_by_duration()
+    print(f"{clip_manager.current_clip.id}: {time:.3f} / {duration:.3f} " 
+          + f" ({clip_manager.get_progress():.1f}%) -> {'Menu On' if clip_manager.show_menu else 'Menu Off'}"
+          + f" -> {clip_manager.next_clip.id}")
     
 # Quit Pygame
 pygame.quit()
