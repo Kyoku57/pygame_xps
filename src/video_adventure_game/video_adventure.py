@@ -1,28 +1,51 @@
-import os, pygame, uuid
+import os, pygame, time
 from moviepy.editor import VideoFileClip
 from enum import Enum
 
+class ClipResources:
+    """List of clips"""
+    def __init__(self, assets_dir, cache_dir):
+        self.video_cache = {}
+        self.clips = {}
+        self.assets_dir=assets_dir
+        self.cache_dir=cache_dir
+
+    def add(self, clip_id, video_filename, start, end):
+        """Add a new clip into resources"""
+        if clip_id in self.clips.keys():
+            raise NameError(f"{clip.id} is already used !!!")
+        if video_filename in self.video_cache.keys():
+            print(f"{video_filename} is already in video cache !!!")
+        else:
+            self.video_cache[video_filename]=VideoFileClip(os.path.join(assets_dir,video_filename))
+
+        clip=Clip(clip_id, cache_dir, self.video_cache[video_filename], start, end)
+        self.clips[clip.id]=clip
+
+    def get(self, clip_id):
+        """Get clip by clip identifier"""
+        if clip_id not in self.clips.keys():
+            raise NameError(f"{clip_id} is not in resources !!!")
+        return self.clips[clip_id]
+
 class Clip:
     """Clip that represent a subset of a video"""
-    def __init__(self, id, assets_path, cache_path, filename, start, end):
+    def __init__(self, id, cache_path, clip, start, end):
         # time-management
         self.id=id
         self.start,self.end=start,end
         self.duration=self.end-self.start
         self.time=0
         # path
-        self.assets_path=assets_path
         self.cache_path=cache_path
-        self.filename=filename
         # video subclip
-        self.video_path=os.path.join(assets_path,filename)
-        self.clip=VideoFileClip(self.video_path)
+        self.clip=clip
         self.clip=self.clip.subclip(self.start, self.end)
         self.frame=self.clip.get_frame(t=self.time)
         # audio
         self.audio=None
         self.audio_filename=os.path.join(self.cache_path,
-            self.id+"."+self.filename+"."+str(self.start)+"."+str(self.end)+".wav")
+            self.id+"."+str(self.start)+"."+str(self.end)+".wav")
         self.cache_audio()
 
     def reset(self):
@@ -90,14 +113,22 @@ class ClipManager:
 
 class Menu:
     """Menu"""
-    def __init__(self, dimension):
-        self.height=dimension[1]
-        self.width=dimension[0]
-        self.surface=pygame.Surface(dimension, pygame.SRCALPHA)
-        self.banner=pygame.Rect(0, self.height, self.width, self.height)
-        self.visible=False
-        self.animation_show=False
-        self.animation_hide=False
+    def __init__(self, init_position, dimension):
+        # position, dimension
+        self.width,self.height = dimension
+        self.init_left,self.init_top = init_position
+        self.left,self.top = init_position
+
+        self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
+        self.banner = pygame.Rect(0, 0, self.width, self.height)
+        # control
+        self.visible = False
+        self.animation_show = False
+        self.animation_hide = False
+        # Font initialisation
+        t0 = time.time()
+        self.font=pygame.font.SysFont(None, 24)
+        print('time needed for Font creation :', time.time()-t0)
     
     def toggle(self):
         if self.visible is True:
@@ -114,51 +145,35 @@ class Menu:
         self.animation_show=False
 
     def update(self):
+        limit_high = self.init_top-self.height-10
+        limit_low = self.init_top
         if self.animation_show is True:
-            if self.banner.top-2 < 0:
-                self.banner.top=0
-                self.animation_show=False
-                self.visible=True
+            if self.top-2 < limit_high:
+                self.top = limit_high
+                self.animation_show = False
+                self.visible = True
             else:
-                self.banner.move_ip(0,-2)
+                self.top -= 2
         
         if self.animation_hide is True:
-            if self.banner.top >= self.height:
-                self.banner.top=self.height
-                self.animation_hide=False
-                self.visible=False
+            if self.top >= limit_low:
+                self.top = limit_low
+                self.animation_hide = False
+                self.visible = False
             else:
-                self.banner.move_ip(0,2)
+                self.top += 2
 
     def get_surface(self):
         self.surface.fill(pygame.SRCALPHA)
         self.surface=self.surface.convert_alpha()
-        pygame.draw.rect(self.surface, pygame.Color(0,50,80), self.banner,0,10,10,10,10)
+        pygame.draw.rect(self.surface, pygame.Color(50,50,50), self.banner, 0, 10, 10, 10, 10)
+        #experiment text rendering
+        img=self.font.render("W -> Clip1    X -> Clip2    C -> Clip3", True, (200,200,200))
+        img2=self.font.render("V -> Clip4    B -> Clip5    N -> Clip6", True, (200,200,200))
+        self.surface.blit(img, (20,10))
+        self.surface.blit(img2, (20,35))
+        #experiment text rendering
         return self.surface
-
-
-class ClipResources:
-    """List of clips"""
-    def __init__(self, assets_dir, cache_dir):
-        self.clips = {}
-        self.assets_dir=assets_dir
-        self.cache_dir=cache_dir
-
-    def add(self, clip):
-        if clip.id in self.clips.keys():
-            raise NameError(f"{clip.id} is already used !!!")
-        self.clips[clip.id]=clip
-
-    def add(self, clip_id, video_filename, start, end):
-        if clip_id in self.clips.keys():
-            raise NameError(f"{clip.id} is already used !!!")
-        clip=Clip(clip_id, assets_dir, cache_dir, video_filename, start, end)
-        self.clips[clip.id]=clip
-
-    def get(self, clip_id):
-        if clip_id not in self.clips.keys():
-            raise NameError(f"{clip_id} is not in resources !!!")
-        return self.clips[clip_id]
 
 class Choice:
     pass
@@ -190,7 +205,7 @@ clips.add("PIANO","abba.mp4",1,9.5)
 clips.add("I_WORK_ALL_NIGHT","abba.mp4",13,29)
 clips.add("WEATHLY_MEN","abba.mp4",33.5,43)
 clips.add("MONEY_MONEY","abba.mp4",48,63)
-clips.add("AHHHHHHHHHH","abba.mp4",133.5,146)
+clips.add("AHHHHHHHHHH","abba.mp4",133,146)
 clips.add("HIGHER","abba.mp4",149.5,165)
 
 # Create scenes
@@ -209,12 +224,14 @@ scene3.add_clip("AHHHHHHHHHH")
 scene3.add_clip("HIGHER")
 print(f"scene3 is about {scene3.get_duration()} seconds")
 
-# ClipManagement
-clip_manager=ClipManager(clips.get("WEATHLY_MEN"))
+# ClipManagement and screen size
+clip_manager=ClipManager(clips.get("PIANO"))
 screen_size=clip_manager.get_surface().get_size()
 
 # init menu
-menu=Menu(dimension=(screen_size[0]-50,60))
+menu_dimension=(screen_size[0]-50,60)
+menu_init_position=((screen_size[0]-menu_dimension[0])/2, screen_size[1])
+menu=Menu(menu_init_position, menu_dimension)
 
 # Prepare SCREEN
 screen=pygame.display.set_mode(screen_size, 0, 32)
@@ -258,7 +275,7 @@ while running:
 
     # Draw the surface onto the window
     screen.blit(clip_manager.get_surface(), (0, 0))
-    screen.blit(menu.get_surface(), ((screen_size[0]-menu.width)/2, screen_size[1]-menu.height))
+    screen.blit(menu.get_surface(), (menu.left, menu.top))
     pygame.display.flip()
 
     # debug
