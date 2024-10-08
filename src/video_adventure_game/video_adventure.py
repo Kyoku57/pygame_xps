@@ -276,13 +276,18 @@ while running:
     # Draw the surface onto the window
     screen.blit(clip_manager.get_surface(), (0, 0))
     screen.blit(menu.get_surface(), (menu.left, menu.top))
-    pygame.display.flip()
 
     # debug
     time, duration=clip_manager.get_time_by_duration()
     print(f"{clip_manager.current_clip.id}: {time:.3f} / {duration:.3f} " 
           + f" ({clip_manager.get_progress():.1f}%) -> {'Menu On' if clip_manager.show_menu else 'Menu Off'}"
           + f" -> {clip_manager.next_clip.id}")
+    pygame.draw.rect(screen, pygame.Color(255,int(255*time/duration),0), pygame.Rect(0,0,screen_size[0]*time/duration,5))
+    
+    # render
+    pygame.display.flip()
+
+
     
 # Quit Pygame
 pygame.quit()
