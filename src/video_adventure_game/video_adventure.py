@@ -1,76 +1,7 @@
 import os, pygame, time
 from moviepy.editor import VideoFileClip
-from enum import Enum
-
-class ClipResources:
-    """List of clips"""
-    def __init__(self, assets_dir, cache_dir):
-        self.video_cache = {}
-        self.clips = {}
-        self.assets_dir=assets_dir
-        self.cache_dir=cache_dir
-
-    def add(self, clip_id, video_filename, start, end):
-        """Add a new clip into resources"""
-        if clip_id in self.clips.keys():
-            raise NameError(f"{clip.id} is already used !!!")
-        if video_filename in self.video_cache.keys():
-            print(f"{video_filename} is already in video cache !!!")
-        else:
-            self.video_cache[video_filename]=VideoFileClip(os.path.join(assets_dir,video_filename))
-
-        clip=Clip(clip_id, cache_dir, self.video_cache[video_filename], start, end)
-        self.clips[clip.id]=clip
-
-    def get(self, clip_id):
-        """Get clip by clip identifier"""
-        if clip_id not in self.clips.keys():
-            raise NameError(f"{clip_id} is not in resources !!!")
-        return self.clips[clip_id]
-
-class Clip:
-    """Clip that represent a subset of a video"""
-    def __init__(self, id, cache_path, clip, start, end):
-        # time-management
-        self.id=id
-        self.start,self.end=start,end
-        self.duration=self.end-self.start
-        self.time=0
-        # path
-        self.cache_path=cache_path
-        # video subclip
-        self.clip=clip
-        self.clip=self.clip.subclip(self.start, self.end)
-        self.frame=self.clip.get_frame(t=self.time)
-        # audio
-        self.audio=None
-        self.audio_filename=os.path.join(self.cache_path,
-            self.id+"."+str(self.start)+"."+str(self.end)+".wav")
-        self.cache_audio()
-
-    def reset(self):
-        self.time=0
-       
-    def update_and_return_isfinished(self):
-        """Obtain the right frame"""
-        self.frame=self.clip.get_frame(t=self.time)
-        self.time += 1/25
-        is_finished = self.time > self.duration
-        if is_finished:
-            self.reset()
-        return is_finished
-    
-    def cache_audio(self):
-        """Extract and create audio cache for the clip"""
-        # cache intermediare file
-        if not os.path.exists(self.audio_filename):
-            self.clip.audio.write_audiofile(self.audio_filename)
-        else:
-            print(f"{self.audio_filename} already cached !")
-        # cache audio object
-        if self.audio is None:
-            self.audio=pygame.mixer.Sound(self.audio_filename)
-
+from clip import ClipResources
+from menu import Menu
 
 class ClipManager:
     """Object that manage which clip to render"""
@@ -111,76 +42,15 @@ class ClipManager:
         return self.current_clip.time, self.current_clip.duration
         
 
-class Menu:
-    """Menu"""
-    def __init__(self, init_position, dimension):
-        # position, dimension
-        self.width,self.height = dimension
-        self.init_left,self.init_top = init_position
-        self.left,self.top = init_position
-        # surfaces
-        self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
-        self.banner = pygame.Rect(0, 0, self.width, self.height)
-        # control
-        self.visible = False
-        self.animation_show = False
-        self.animation_hide = False
-        # Font initialisation
-        t0 = time.time()
-        self.font=pygame.font.SysFont(None, 24)
-        print('time needed for Font creation :', time.time()-t0)
-    
-    def toggle(self):
-        if self.visible is True:
-            self.hide()
-        else:
-            self.show()
-
-    def show(self):
-        self.animation_hide=False
-        self.animation_show=True
-
-    def hide(self):
-        self.animation_hide=True
-        self.animation_show=False
-
-    def update(self):
-        limit_high = self.init_top-self.height-10
-        limit_low = self.init_top
-        if self.animation_show is True:
-            if self.top-2 < limit_high:
-                self.top = limit_high
-                self.animation_show = False
-                self.visible = True
-            else:
-                self.top -= 2
-        
-        if self.animation_hide is True:
-            if self.top >= limit_low:
-                self.top = limit_low
-                self.animation_hide = False
-                self.visible = False
-            else:
-                self.top += 2
-
-    def get_surface(self):
-        self.surface.fill(pygame.SRCALPHA)
-        self.surface=self.surface.convert_alpha()
-        pygame.draw.rect(self.surface, pygame.Color(50,50,50), self.banner, 0, 10, 10, 10, 10)
-        #experiment text rendering
-        img=self.font.render("W -> Clip1    X -> Clip2    C -> Clip3", True, (200,200,200))
-        img2=self.font.render("V -> Clip4    B -> Clip5    N -> Clip6", True, (200,200,200))
-        self.surface.blit(img, (20,10))
-        self.surface.blit(img2, (20,35))
-        #experiment text rendering
-        return self.surface
-
 class Choice:
-    def __init__(self):
-        pass
+    def __init__(self, choice_id, description, next_scene):
+        self.choice_id = choice_id
+        self.description = description
+        self.next_scene = next_scene
 
 
 class Scene:
+    """A scene is a chain of clips and choices"""
     def __init__(self, clips_resources, scene_id, menu_start_time, menu_duration):
         # Cache data
         self.id = scene_id
@@ -195,8 +65,12 @@ class Scene:
         self.default_choice = None
 
     def add_clip(self, clip_id):
-        clip=self.clips_resources.get(clip_id)
+        clip = self.clips_resources.get(clip_id)
         self.ordered_clips.append(clip)
+
+    def add_choice(self, choice_id, description, next_scene):
+        choice = Choice(choice_id, description, next_scene)
+        self.choices.append(choice)
     
     def check_duration(self):
         scene_duration = sum([clip.duration for clip in self.ordered_clips])
@@ -208,8 +82,7 @@ class Scene:
 
 
 class SceneResources:
-    def __init__(self, clips_resources):
-        self.clips_resources = clips_resources
+    def __init__(self):
         self.scenes = {}
 
     def add(self, scene):
@@ -224,8 +97,22 @@ class SceneResources:
             raise NameError(f"{scene_id} is not in resources !!!")
         return self.scenes[scene_id]
     
+    def check_coherence(self):
+        pass # need to check every scene / choice exists
+
+
+
 class SceneManager:
     def __init__(self, scene_resources):
+        pass
+
+    def get_first_scene(self):
+        pass
+
+    def get_current_scene(self):
+        pass
+
+    def get_next_scene(self):
         pass
 
 # Initialize Pygame
@@ -245,20 +132,34 @@ clips.add("AHHHHHHHHHH","abba.mp4",133,146)
 clips.add("HIGHER","abba.mp4",149.5,165)
 
 # Create scenes
+scene_resources = SceneResources()
+# Scene 1
 scene1=Scene(clips, "SCENE_1", 3, 10)
 scene1.add_clip("PIANO")
 scene1.add_clip("I_WORK_ALL_NIGHT")
+scene1.add_choice("GOTO_SCENE2", "Allez à la scène 2", "SCENE_2")
+scene1.add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3")
 print(f"scene1 is about {scene1.check_duration()} seconds")
-
+scene_resources.add(scene1)
+# Scene 2
 scene2=Scene(clips, "SCENE_2", 3, 10)
 scene2.add_clip("WEATHLY_MEN")
 scene2.add_clip("MONEY_MONEY")
+scene1.add_choice("GOTO_SCENE1", "Allez à la scène 1", "SCENE_1")
+scene1.add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3")
 print(f"scene2 is about {scene2.check_duration()} seconds")
-
+scene_resources.add(scene2)
+# Scene 3
 scene3=Scene(clips,"SCENE_3", 3, 10)
 scene3.add_clip("AHHHHHHHHHH")
 scene3.add_clip("HIGHER")
+scene1.add_choice("GOTO_SCENE1", "Allez à la scène 1", "SCENE_1")
+scene1.add_choice("GOTO_SCENE2", "Allez à la scène 2", "SCENE_2")
 print(f"scene3 is about {scene3.check_duration()} seconds")
+scene_resources.add(scene3)
+
+# Current scene 
+current_scene = scene_resources.get("SCENE_1")
 
 # ClipManagement and screen size
 clip_manager=ClipManager(clips.get("PIANO"))
@@ -286,6 +187,7 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
+
         # choose clip extract
         if clip_manager.show_menu:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
@@ -300,7 +202,9 @@ while running:
                 clip_manager.next_clip=clips.get("AHHHHHHHHHH")
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_n:
                 clip_manager.next_clip=clips.get("HIGHER")
-          
+
+
+
     # update objects to draw
     clip_manager.update()
     if clip_manager.show_menu:
