@@ -118,7 +118,7 @@ class Menu:
         self.width,self.height = dimension
         self.init_left,self.init_top = init_position
         self.left,self.top = init_position
-
+        # surfaces
         self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
         self.banner = pygame.Rect(0, 0, self.width, self.height)
         # control
@@ -176,21 +176,57 @@ class Menu:
         return self.surface
 
 class Choice:
-    pass
+    def __init__(self):
+        pass
+
 
 class Scene:
-    def __init__(self, clips_resources):
-        self.ordered_clips=[]
-        self.choices=[]
-        self.clips_resources=clips_resources
+    def __init__(self, clips_resources, scene_id, menu_start_time, menu_duration):
+        # Cache data
+        self.id = scene_id
+        self.ordered_clips = []
+        self.clips_resources = clips_resources
+        # Menu management
+        self.menu_start_time = menu_start_time
+        self.menu_duration = menu_duration
+        self.show_menu = False
+        # Choices management
+        self.choices = []
+        self.default_choice = None
 
     def add_clip(self, clip_id):
         clip=self.clips_resources.get(clip_id)
         self.ordered_clips.append(clip)
     
-    def get_duration(self):
-        return sum([clip.duration for clip in self.ordered_clips])
+    def check_duration(self):
+        scene_duration = sum([clip.duration for clip in self.ordered_clips])
+        if self.menu_start_time + self.menu_duration > scene_duration:
+            raise Exception(f"Menu duration({self.menu_start_time}) and Menu duration({self.menu_duration}) are superior to Scene duration({scene_duration})") 
+        if self.menu_duration < 10:
+            raise Exception(f"Too low value for menu_duration") 
+        return scene_duration
 
+
+class SceneResources:
+    def __init__(self, clips_resources):
+        self.clips_resources = clips_resources
+        self.scenes = {}
+
+    def add(self, scene):
+        """Add a new scene into resources"""
+        if scene.id in self.scenes.keys():
+            raise NameError(f"{scene.id} is already used !!!")
+        self.scenes[scene.id]=scene
+
+    def get(self, scene_id):
+        """Get Scene by scene identifier"""
+        if scene_id not in self.scenes.keys():
+            raise NameError(f"{scene_id} is not in resources !!!")
+        return self.scenes[scene_id]
+    
+class SceneManager:
+    def __init__(self, scene_resources):
+        pass
 
 # Initialize Pygame
 pygame.init()
@@ -209,20 +245,20 @@ clips.add("AHHHHHHHHHH","abba.mp4",133,146)
 clips.add("HIGHER","abba.mp4",149.5,165)
 
 # Create scenes
-scene1=Scene(clips)
+scene1=Scene(clips, "SCENE_1", 3, 10)
 scene1.add_clip("PIANO")
 scene1.add_clip("I_WORK_ALL_NIGHT")
-print(f"scene1 is about {scene1.get_duration()} seconds")
+print(f"scene1 is about {scene1.check_duration()} seconds")
 
-scene2=Scene(clips)
+scene2=Scene(clips, "SCENE_2", 3, 10)
 scene2.add_clip("WEATHLY_MEN")
 scene2.add_clip("MONEY_MONEY")
-print(f"scene2 is about {scene2.get_duration()} seconds")
+print(f"scene2 is about {scene2.check_duration()} seconds")
 
-scene3=Scene(clips)
+scene3=Scene(clips,"SCENE_3", 3, 10)
 scene3.add_clip("AHHHHHHHHHH")
 scene3.add_clip("HIGHER")
-print(f"scene3 is about {scene3.get_duration()} seconds")
+print(f"scene3 is about {scene3.check_duration()} seconds")
 
 # ClipManagement and screen size
 clip_manager=ClipManager(clips.get("PIANO"))
