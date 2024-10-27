@@ -62,7 +62,7 @@ class Menu:
         pygame.draw.rect(self.surface, pygame.Color(50,50,50), self.banner, 0, 10, 10, 10, 10)
         #experiment text rendering
         img  =self.font.render("W -> Scene 1    X -> Scene 2    C -> Scene 3", True, (200,200,200))
-        img2 =self.font.render("V -> Scene 4    B -> Scene 5    N -> Scene 6", True, (200,200,200))
+        img2 =self.font.render("V -> Scene 1    B -> Scene 2    N -> Scene 3", True, (200,200,200))
         self.surface.blit(img, (20,10))
         self.surface.blit(img2, (20,35))
         #experiment text rendering

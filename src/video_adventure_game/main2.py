@@ -43,6 +43,20 @@ while running:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
 
+        if menu.visible:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
+                scene_manager.set_next_scene("SCENE_1")
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+                scene_manager.set_next_scene("SCENE_2")
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+                scene_manager.set_next_scene("SCENE_3")
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_v:
+                scene_manager.set_next_scene("SCENE_1")
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_b:
+                scene_manager.set_next_scene("SCENE_2")
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_n:
+                scene_manager.set_next_scene("SCENE_3")
+
     # Update
     scene_manager.update()
 
@@ -68,6 +82,7 @@ while running:
     print("-------------------------------")
     print(f"Scene : {scene_manager.current_scene.id}: {scene_time:.3f} / {scene_duration:.3f}")
     print(f"Clip  : {scene_manager.clip_manager.current_clip.id}: {clip_time:.3f} / {clip_duration:.3f}")
+    print(f"Next Scene  : {scene_manager.next_scene.id}")
     print(f"Menu between {scene_manager.current_scene.menu_start_time:.3f} and "+
           f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.3f} " +
           f"-> {"Visible" if menu.visible else "Hidden"}")

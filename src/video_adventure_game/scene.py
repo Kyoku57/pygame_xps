@@ -68,10 +68,10 @@ class SceneManager:
     Get current scene
     Get current clip
     """
-    def __init__(self, scene_resources, first_scene_name):
+    def __init__(self, scene_resources, first_scene_id):
         # Scene
         self.scene_resources = scene_resources
-        self.current_scene = self.scene_resources.get(first_scene_name)
+        self.current_scene = self.scene_resources.get(first_scene_id)
         self.next_scene = self.current_scene
         # Clips
         self.clip_index = 0
@@ -86,6 +86,9 @@ class SceneManager:
                 self.current_scene = self.next_scene
                 self.clip_index = 0
             self.clip_manager.current_clip = self.current_scene.ordered_clips[self.clip_index]
+
+    def set_next_scene(self, scene_id):
+        self.next_scene = self.scene_resources.get(scene_id)
 
     def get_surface(self):
         """Export updated Surface"""
