@@ -54,12 +54,22 @@ class SceneManager:
             # is last clip of the scene ?
             if self.clip_index >= len(self.current_scene.ordered_clips):
                 self.current_scene = self.next_scene
-                self.clip_index = 0;
+                self.clip_index = 0
             self.clip_manager.current_clip = self.current_scene.ordered_clips[self.clip_index]
 
     def get_surface(self):
         """Export updated Surface"""
         return self.clip_manager.get_surface()
+
+    def get_time_by_duration(self):
+        clip_time, clip_duration = self.clip_manager.get_time_by_duration()
+        scene_time = self.current_scene.duration_to_index(self.clip_index) + clip_time
+        return scene_time, self.current_scene.duration()
+ 
+    def get_progress(self):
+        scene_time, scene_duration = self.get_time_by_duration()
+        return (scene_time)*100/(scene_duration)
+
         
 
 # Initialize Pygame
@@ -87,7 +97,7 @@ scene1.add_clip("PIANO")
 scene1.add_clip("I_WORK_ALL_NIGHT")
 scene1.add_choice("GOTO_SCENE2", "Allez à la scène 2", "SCENE_2")
 scene1.add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3")
-print(f"scene1 is about {scene1.check_duration()} seconds")
+print(f"scene1 is about {scene1.duration()} seconds")
 scene_resources.add(scene1)
 # Scene 2
 scene2=Scene(clips, "SCENE_2", 3, 10)
@@ -95,7 +105,7 @@ scene2.add_clip("WEATHLY_MEN")
 scene2.add_clip("MONEY_MONEY")
 scene1.add_choice("GOTO_SCENE1", "Allez à la scène 1", "SCENE_1")
 scene1.add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3")
-print(f"scene2 is about {scene2.check_duration()} seconds")
+print(f"scene2 is about {scene2.duration()} seconds")
 scene_resources.add(scene2)
 # Scene 3
 scene3=Scene(clips,"SCENE_3", 3, 10)
@@ -103,7 +113,7 @@ scene3.add_clip("AHHHHHHHHHH")
 scene3.add_clip("HIGHER")
 scene1.add_choice("GOTO_SCENE1", "Allez à la scène 1", "SCENE_1")
 scene1.add_choice("GOTO_SCENE2", "Allez à la scène 2", "SCENE_2")
-print(f"scene3 is about {scene3.check_duration()} seconds")
+print(f"scene3 is about {scene3.duration()} seconds")
 scene_resources.add(scene3)
 
 # Screen size
@@ -139,17 +149,22 @@ while running:
     # Update
     scene_manager.update()
 
+    # Get time reference of the scene and current clip
+    clip_time, clip_duration = scene_manager.clip_manager.get_time_by_duration()
+    scene_time, scene_duration = scene_manager.get_time_by_duration()
+
+
+
     # Draw the surface onto the window
     screen.fill(BLACK)
     screen.blit(scene_manager.get_surface(), (0, 0))
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
     # debug
-    #time, duration=clip_manager.get_time_by_duration()
-    #print(f"{clip_manager.current_clip.id}: {time:.3f} / {duration:.3f} " 
-    #      + f" ({clip_manager.get_progress():.1f}%) -> {'Menu On' if clip_manager.show_menu else 'Menu Off'}"
-    #      + f" -> {clip_manager.next_clip.id}")
-    #pygame.draw.rect(screen, pygame.Color(255,int(255*time/duration),0), pygame.Rect(0,screen_size[1]-5,screen_size[0]*time/duration,5))
+    print("-------------------------------")
+    print(f"Scene : {scene_manager.current_scene.id}: {scene_time:.3f} / {scene_duration:.3f}")
+    print(f"Clip  : {scene_manager.clip_manager.current_clip.id}: {clip_time:.3f} / {clip_duration:.3f}")
+    pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-5,screen_size[0]*scene_time/scene_duration,5))
     
     # render
     pygame.display.flip()

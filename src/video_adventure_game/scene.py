@@ -27,8 +27,11 @@ class Scene:
     def add_choice(self, choice_id, description, next_scene):
         choice = Choice(choice_id, description, next_scene)
         self.choices.append(choice)
-    
-    def check_duration(self):
+
+    def duration_to_index(self, index):
+        return sum([self.ordered_clips[i].duration for i in range(index)])
+
+    def duration(self):
         scene_duration = sum([clip.duration for clip in self.ordered_clips])
         if self.menu_start_time + self.menu_duration > scene_duration:
             raise Exception(f"Menu duration({self.menu_start_time}) and Menu duration({self.menu_duration}) are superior to Scene duration({scene_duration})") 
