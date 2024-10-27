@@ -1,109 +1,23 @@
-import os, pygame, time
-from clip import ClipResources
-from scene import Scene, SceneResources
+import pygame
 from menu import Menu
+from configuration import scene_resources
+from scene import SceneManager
 
-class ClipManager:
-    """Object that manage which clip to render"""
-    def __init__(self, first_clip):
-        self.first_launch=True
-        self.current_clip=first_clip
-        self.next_clip=first_clip
-        self.surface=pygame.surfarray.make_surface(self.current_clip.frame.swapaxes(0, 1))
-        self.show_menu=False
+# Global variables
+BLACK=(0,0,0)
 
-    def update(self):
-        """Update frame for Surface buffer and play audio if necessary"""
-        if self.first_launch is True:
-            self.play_associated_audio()
-            self.first_launch=False
-        if self.current_clip.update_and_return_isfinished():
-            self.current_clip=self.next_clip
-            self.play_associated_audio()
-        # inform that the menu can be shown
-        if self.get_progress() > 20:
-            self.show_menu=True
-        if self.get_progress() > 80:
-            self.show_menu=False
-
-    def get_surface(self):
-        """Export updated Surface"""
-        pygame.surfarray.blit_array(self.surface, self.current_clip.frame.swapaxes(0, 1))
-        return self.surface
-    
-    def play_associated_audio(self):
-        """Play audio"""
-        self.current_clip.audio.play()
-
-    def get_progress(self):
-        return (self.current_clip.time)*100/(self.current_clip.duration)
-    
-    def get_time_by_duration(self):
-        return self.current_clip.time, self.current_clip.duration
-        
-
-class SceneManager:
-    def __init__(self, scene_resources):
-        pass
-
-    def get_first_scene(self):
-        pass
-
-    def get_current_scene(self):
-        pass
-
-    def get_next_scene(self):
-        pass
+class History:
+    """Define history of choice"""
+    pass
 
 # Initialize Pygame
 pygame.init()
 
-# assets and cache
-assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
-cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
+# Screen size
+screen_size=(1000,500)
 
-# Clip management
-clips=ClipResources(assets_dir,cache_dir)
-clips.add("PIANO","abba.mp4",1,9.5)
-clips.add("I_WORK_ALL_NIGHT","abba.mp4",13,29)
-clips.add("WEATHLY_MEN","abba.mp4",33.5,43)
-clips.add("MONEY_MONEY","abba.mp4",48,63)
-clips.add("AHHHHHHHHHH","abba.mp4",133,146)
-clips.add("HIGHER","abba.mp4",149.5,165)
-
-# Create scenes
-scene_resources = SceneResources()
-# Scene 1
-scene1=Scene(clips, "SCENE_1", 3, 10)
-scene1.add_clip("PIANO")
-scene1.add_clip("I_WORK_ALL_NIGHT")
-scene1.add_choice("GOTO_SCENE2", "Allez à la scène 2", "SCENE_2")
-scene1.add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3")
-print(f"scene1 is about {scene1.check_duration()} seconds")
-scene_resources.add(scene1)
-# Scene 2
-scene2=Scene(clips, "SCENE_2", 3, 10)
-scene2.add_clip("WEATHLY_MEN")
-scene2.add_clip("MONEY_MONEY")
-scene1.add_choice("GOTO_SCENE1", "Allez à la scène 1", "SCENE_1")
-scene1.add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3")
-print(f"scene2 is about {scene2.check_duration()} seconds")
-scene_resources.add(scene2)
-# Scene 3
-scene3=Scene(clips,"SCENE_3", 3, 10)
-scene3.add_clip("AHHHHHHHHHH")
-scene3.add_clip("HIGHER")
-scene1.add_choice("GOTO_SCENE1", "Allez à la scène 1", "SCENE_1")
-scene1.add_choice("GOTO_SCENE2", "Allez à la scène 2", "SCENE_2")
-print(f"scene3 is about {scene3.check_duration()} seconds")
-scene_resources.add(scene3)
-
-# Current scene 
-current_scene = scene_resources.get("SCENE_1")
-
-# ClipManagement and screen size
-clip_manager=ClipManager(clips.get("PIANO"))
-screen_size=clip_manager.get_surface().get_size()
+# Init Current scene 
+scene_manager = SceneManager(scene_resources,"SCENE_1")
 
 # init menu
 menu_dimension=(screen_size[0]-50,60)
@@ -112,7 +26,8 @@ menu=Menu(menu_init_position, menu_dimension)
 
 # Prepare SCREEN
 screen=pygame.display.set_mode(screen_size, 0, 32)
-pygame.display.set_caption("ABBA test")
+#screen=pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+pygame.display.set_caption("Clip/Scene test")
 
 # Run the Pygame loop to keep the window open
 running=True
@@ -128,46 +43,54 @@ while running:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
 
-        # choose clip extract
-        if clip_manager.show_menu:
+        if menu.visible:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
-                clip_manager.next_clip=clips.get("PIANO")
+                scene_manager.set_next_scene("SCENE_1")
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_x:
-                clip_manager.next_clip=clips.get("I_WORK_ALL_NIGHT")
+                scene_manager.set_next_scene("SCENE_2")
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
-                clip_manager.next_clip=clips.get("WEATHLY_MEN")
+                scene_manager.set_next_scene("SCENE_3")
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_v:
-                clip_manager.next_clip=clips.get("MONEY_MONEY")
+                scene_manager.set_next_scene("SCENE_1")
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_b:
-                clip_manager.next_clip=clips.get("AHHHHHHHHHH")
+                scene_manager.set_next_scene("SCENE_2")
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_n:
-                clip_manager.next_clip=clips.get("HIGHER")
+                scene_manager.set_next_scene("SCENE_3")
 
+    # Update
+    scene_manager.update()
 
+    # Get time reference of the scene and current clip
+    clip_time, clip_duration = scene_manager.clip_manager.get_time_by_duration()
+    scene_time, scene_duration = scene_manager.get_time_by_duration()
 
-    # update objects to draw
-    clip_manager.update()
-    if clip_manager.show_menu:
-        menu.show() 
-    else: 
+    # Show menu or not 
+    menu_to_show = False
+    if (scene_time > scene_manager.current_scene.menu_start_time and \
+        scene_time < scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration):
+        menu.show()
+    else:
         menu.hide()
     menu.update()
 
     # Draw the surface onto the window
-    screen.blit(clip_manager.get_surface(), (0, 0))
+    screen.fill(BLACK)
+    screen.blit(scene_manager.get_surface(), (0, 0))
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
     # debug
-    time, duration=clip_manager.get_time_by_duration()
-    print(f"{clip_manager.current_clip.id}: {time:.3f} / {duration:.3f} " 
-          + f" ({clip_manager.get_progress():.1f}%) -> {'Menu On' if clip_manager.show_menu else 'Menu Off'}"
-          + f" -> {clip_manager.next_clip.id}")
-    pygame.draw.rect(screen, pygame.Color(255,int(255*time/duration),0), pygame.Rect(0,0,screen_size[0]*time/duration,5))
+    print("-------------------------------")
+    print(f"Scene : {scene_manager.current_scene.id}: {scene_time:.3f} / {scene_duration:.3f}")
+    print(f"Clip  : {scene_manager.clip_manager.current_clip.id}: {clip_time:.3f} / {clip_duration:.3f}")
+    print(f"Next Scene  : {scene_manager.next_scene.id}")
+    print(f"Menu between {scene_manager.current_scene.menu_start_time:.3f} and "+
+          f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.3f} " +
+          f"-> {"Visible" if menu.visible else "Hidden"}")
+
+    pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-5,screen_size[0]*scene_time/scene_duration,5))
     
     # render
     pygame.display.flip()
 
-
-    
 # Quit Pygame
 pygame.quit()
