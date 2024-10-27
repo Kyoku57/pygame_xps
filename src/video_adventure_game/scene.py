@@ -6,7 +6,7 @@ class Choice:
 
 
 class Scene:
-    """A scene is a chain of clips and choices"""
+    """A scene is a chain of clips and choices. It contains index"""
     def __init__(self, clips_resources, scene_id, menu_start_time, menu_duration):
         # Cache data
         self.id = scene_id
@@ -34,7 +34,8 @@ class Scene:
             raise Exception(f"Menu duration({self.menu_start_time}) and Menu duration({self.menu_duration}) are superior to Scene duration({scene_duration})") 
         if self.menu_duration < 10:
             raise Exception(f"Too low value for menu_duration") 
-        return scene_duration
+        return scene_duration   
+
 
 
 class SceneResources:
