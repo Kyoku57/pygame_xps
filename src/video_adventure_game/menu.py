@@ -26,6 +26,9 @@ class Menu:
         else:
             self.show()
 
+    def create_from_scene(self, choices):
+        pass
+
     def show(self):
         self.animation_hide=False
         self.animation_show=True
@@ -58,8 +61,8 @@ class Menu:
         self.surface=self.surface.convert_alpha()
         pygame.draw.rect(self.surface, pygame.Color(50,50,50), self.banner, 0, 10, 10, 10, 10)
         #experiment text rendering
-        img=self.font.render("W -> Clip1    X -> Clip2    C -> Clip3", True, (200,200,200))
-        img2=self.font.render("V -> Clip4    B -> Clip5    N -> Clip6", True, (200,200,200))
+        img  =self.font.render("W -> Scene 1    X -> Scene 2    C -> Scene 3", True, (200,200,200))
+        img2 =self.font.render("V -> Scene 4    B -> Scene 5    N -> Scene 6", True, (200,200,200))
         self.surface.blit(img, (20,10))
         self.surface.blit(img2, (20,35))
         #experiment text rendering

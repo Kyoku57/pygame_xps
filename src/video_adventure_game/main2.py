@@ -50,6 +50,15 @@ while running:
     clip_time, clip_duration = scene_manager.clip_manager.get_time_by_duration()
     scene_time, scene_duration = scene_manager.get_time_by_duration()
 
+    # Show menu or not 
+    menu_to_show = False
+    if (scene_time > scene_manager.current_scene.menu_start_time and \
+        scene_time < scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration):
+        menu.show()
+    else:
+        menu.hide()
+    menu.update()
+
     # Draw the surface onto the window
     screen.fill(BLACK)
     screen.blit(scene_manager.get_surface(), (0, 0))
@@ -59,6 +68,10 @@ while running:
     print("-------------------------------")
     print(f"Scene : {scene_manager.current_scene.id}: {scene_time:.3f} / {scene_duration:.3f}")
     print(f"Clip  : {scene_manager.clip_manager.current_clip.id}: {clip_time:.3f} / {clip_duration:.3f}")
+    print(f"Menu between {scene_manager.current_scene.menu_start_time:.3f} and "+
+          f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.3f} " +
+          f"-> {"Visible" if menu.visible else "Hidden"}")
+
     pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-5,screen_size[0]*scene_time/scene_duration,5))
     
     # render

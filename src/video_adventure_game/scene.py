@@ -17,7 +17,6 @@ class Scene:
         # Menu management
         self.menu_start_time = menu_start_time
         self.menu_duration = menu_duration
-        self.show_menu = False
         # Choices management
         self.choices = []
         self.default_choice = None
@@ -25,10 +24,12 @@ class Scene:
     def add_clip(self, clip_id):
         clip = self.clips_resources.get(clip_id)
         self.ordered_clips.append(clip)
+        return self
 
     def add_choice(self, choice_id, description, next_scene):
         choice = Choice(choice_id, description, next_scene)
         self.choices.append(choice)
+        return self
 
     def duration_to_index(self, index):
         return sum([self.ordered_clips[i].duration for i in range(index)])
