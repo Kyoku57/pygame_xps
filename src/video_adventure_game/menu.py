@@ -1,33 +1,61 @@
 import pygame
 import time
+from scene import Scene, Choice
+
+GREY = (200,200,200)
+
+class MenuChoice:
+    def __init__(self, font, choice: Choice):
+        self.font = font
+        self.choice = choice
+        self.rendered_choice = self.font.render(f"{choice.description}", True, GREY)
+        self.width = 0
+        self.position = (0,0)
+
 
 class Menu:
     """Menu"""
     def __init__(self, init_position, dimension):
-        # position, dimension
+        # dimension
         self.width,self.height = dimension
-        self.init_left,self.init_top = init_position
+        # position
         self.left,self.top = init_position
-        # surfaces
-        self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
-        self.banner = pygame.Rect(0, 0, self.width, self.height)
+        self.init_left,self.init_top = init_position
         # control
         self.visible = False
         self.animation_show = False
         self.animation_hide = False
+        # choices
+        self.menu_choices = []
         # Font initialisation
         t0 = time.time()
-        self.font=pygame.font.SysFont(None, 24)
+        self.font_size = 24
+        self.font=pygame.font.SysFont(None, self.font_size)
         print('time needed for Font creation :', time.time()-t0)
-    
+        # surfaces
+        self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
+        self.banner = pygame.Rect(0, 0, self.width, self.height)
+
+
     def toggle(self):
         if self.visible is True:
             self.hide()
         else:
             self.show()
 
-    def create_from_scene(self, choices):
-        pass
+    def update_menu_choices_from_scene(self, scene: Scene):
+        choice: Choice
+        top = 10
+        left = 20
+        index = 0
+        total = len(scene.choices)
+        element_width = (self.width - (total*left)) / total
+        for choice in scene.choices:
+            index = index + 1
+            element = MenuChoice(self.font, choice)
+            element.width = element.width
+            element.position = (index*(left+element_width), top)
+            self.menu_choices.append(element)
 
     def show(self):
         self.animation_hide=False
@@ -59,11 +87,9 @@ class Menu:
     def get_surface(self):
         self.surface.fill(pygame.SRCALPHA)
         self.surface=self.surface.convert_alpha()
+        # Banner with rounded edge
         pygame.draw.rect(self.surface, pygame.Color(50,50,50), self.banner, 0, 10, 10, 10, 10)
-        #experiment text rendering
-        img  =self.font.render("W -> Scene 1    X -> Scene 2    C -> Scene 3", True, (200,200,200))
-        img2 =self.font.render("V -> Scene 1    B -> Scene 2    N -> Scene 3", True, (200,200,200))
-        self.surface.blit(img, (20,10))
-        self.surface.blit(img2, (20,35))
-        #experiment text rendering
+        # CHoices rendering
+        for choice in self.menu_choices:
+            self.surface.blit(choice.rendered_choice, choice.position)
         return self.surface

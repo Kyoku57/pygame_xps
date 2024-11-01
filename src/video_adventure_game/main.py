@@ -64,6 +64,10 @@ while running:
     clip_time, clip_duration = scene_manager.clip_manager.get_time_by_duration()
     scene_time, scene_duration = scene_manager.get_time_by_duration()
 
+    # Detect if the scene start to update menu
+    if scene_manager.is_starting is True:
+        menu.update_menu_choices_from_scene(scene_manager.current_scene)
+
     # Show menu or not 
     menu_to_show = False
     if (scene_time > scene_manager.current_scene.menu_start_time and \
@@ -79,9 +83,10 @@ while running:
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
     # debug
-    print("-------------------------------")
-    print(f"Scene : {scene_manager.current_scene.id}: {scene_time:.3f} / {scene_duration:.3f}")
-    print(f"Clip  : {scene_manager.clip_manager.current_clip.id}: {clip_time:.3f} / {clip_duration:.3f}")
+    print("------------------------------------------------------------")
+    print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.3f} / {scene_duration:.3f}")
+    print(f"Clip        : {scene_manager.clip_manager.current_clip.id.ljust(20)} \t {clip_time:.3f} / {clip_duration:.3f}")
+    print(f"Choices     : {",".join([choice.description for choice in scene_manager.current_scene.choices])}")
     print(f"Next Scene  : {scene_manager.next_scene.id}")
     print(f"Menu between {scene_manager.current_scene.menu_start_time:.3f} and "+
           f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.3f} " +

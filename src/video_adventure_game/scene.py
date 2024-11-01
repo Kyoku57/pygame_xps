@@ -66,7 +66,7 @@ class SceneResources:
 class SceneManager:
     """Manager for scene
     Get current scene
-    Get current clip
+    Get current clip: if clip_index is 0 then the Scene is starting
     """
     def __init__(self, scene_resources, first_scene_id):
         # Scene
@@ -76,8 +76,18 @@ class SceneManager:
         # Clips
         self.clip_index = 0
         self.clip_manager = ClipManager(self.current_scene.ordered_clips[self.clip_index])
+        # Status
+        self.is_starting = True
+        self.__is_never_updated = True
 
     def update(self):
+        # Tricky start detection for the very first time of update
+        if self.__is_never_updated is True:
+            self.__is_never_updated = False
+        else:
+            self.is_starting = False
+
+        # Update clip and detect it to go next clip or next scene
         if self.clip_manager.update_and_return_isfinished():
             # next clip if clip is finished
             self.clip_index += 1
@@ -85,7 +95,9 @@ class SceneManager:
             if self.clip_index >= len(self.current_scene.ordered_clips):
                 self.current_scene = self.next_scene
                 self.clip_index = 0
+                self.is_starting = True
             self.clip_manager.current_clip = self.current_scene.ordered_clips[self.clip_index]
+            
 
     def set_next_scene(self, scene_id):
         self.next_scene = self.scene_resources.get(scene_id)
