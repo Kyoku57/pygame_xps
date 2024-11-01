@@ -8,26 +8,29 @@ TEXT_COLOR = (200,200,200)
 
 class MenuChoice:
     def __init__(self, font, choice: Choice, position, dimension):
+        """Create a menu choice element"""
         self.font = font
         self.choice = choice
-        self.rendered_choice = self.font.render(f"{choice.description}", True, TEXT_COLOR)
         self.width, self.height = dimension
         self.position = position
-        self.rect = pygame.Rect((0,0), dimension)
+        # pygame objects
         self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
-        
+        self.rect = pygame.Rect((0,0), dimension)
+        self.rendered_text = self.font.render(f"{choice.description}", True, TEXT_COLOR)
 
     def get_surface(self):
+        """Get surface of the MenuChoice object"""
         self.surface.fill(pygame.SRCALPHA)
         self.surface=self.surface.convert_alpha()
-        pygame.draw.rect(self.surface, ELEMENT_COLOR, self.rect, 0)
-        
+        pygame.draw.rect(self.surface, ELEMENT_COLOR, self.rect, 2)
+        self.surface.blit(self.rendered_text, (5,5))
         return self.surface
 
 
 class Menu:
     """Menu"""
     def __init__(self, init_position, dimension):
+        """Create the menu - should be created once"""
         # dimension
         self.width,self.height = dimension
         self.margin = 10
