@@ -2,19 +2,27 @@ import pygame
 import time
 from scene import Scene, Choice
 
-GREY = (200,200,200)
+BANNER_COLOR = (50,50,50)
+ELEMENT_COLOR = (100,100,100)
+TEXT_COLOR = (200,200,200)
 
 class MenuChoice:
     def __init__(self, font, choice: Choice, position, dimension):
         self.font = font
         self.choice = choice
-        self.rendered_choice = self.font.render(f"{choice.description}", True, GREY)
+        self.rendered_choice = self.font.render(f"{choice.description}", True, TEXT_COLOR)
         self.width, self.height = dimension
         self.position = position
-        self.rect = pygame.Rect(self.position, dimension)
+        self.rect = pygame.Rect((0,0), dimension)
+        self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
+        
 
     def get_surface(self):
-        pass
+        self.surface.fill(pygame.SRCALPHA)
+        self.surface=self.surface.convert_alpha()
+        pygame.draw.rect(self.surface, ELEMENT_COLOR, self.rect, 0)
+        
+        return self.surface
 
 
 class Menu:
@@ -91,10 +99,9 @@ class Menu:
         self.surface.fill(pygame.SRCALPHA)
         self.surface=self.surface.convert_alpha()
         # Banner with rounded edge
-        pygame.draw.rect(self.surface, pygame.Color(50,50,50), self.banner, 0, 10, 10, 10, 10)
+        pygame.draw.rect(self.surface, BANNER_COLOR, self.banner, 0, 10, 10, 10, 10)
         # Choices rendering
         choice: Choice
         for choice in self.menu_choices:
-            pygame.draw.rect(self.surface, pygame.Color(150,150,150), choice.rect, 0)
-            #self.surface.blit(choice.rendered_choice, choice.position)
+            self.surface.blit(choice.get_surface(), choice.position)
         return self.surface

@@ -83,10 +83,6 @@ while running:
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
 
-
-
-
-
     # debug elements
     print("------------------------------------------------------------")
     print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.3f} / {scene_duration:.3f}")
