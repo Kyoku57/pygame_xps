@@ -11,6 +11,10 @@ class MenuChoice:
         self.rendered_choice = self.font.render(f"{choice.description}", True, GREY)
         self.width = 0
         self.position = (0,0)
+        self.rect = pygame.Rect(0, 0, self.width, self.height)
+
+    def get_surface(self):
+
 
 
 class Menu:
@@ -36,7 +40,6 @@ class Menu:
         self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
         self.banner = pygame.Rect(0, 0, self.width, self.height)
 
-
     def toggle(self):
         if self.visible is True:
             self.hide()
@@ -44,17 +47,16 @@ class Menu:
             self.show()
 
     def update_menu_choices_from_scene(self, scene: Scene):
-        choice: Choice
-        top = 10
-        left = 20
+        top, left = 10, 20
         index = 0
         total = len(scene.choices)
         element_width = (self.width - (total*left)) / total
+        self.menu_choices = []
         for choice in scene.choices:
             index = index + 1
             element = MenuChoice(self.font, choice)
             element.width = element.width
-            element.position = (index*(left+element_width), top)
+            element.position = (( index*left + (index-1)*element_width ), top)
             self.menu_choices.append(element)
 
     def show(self):

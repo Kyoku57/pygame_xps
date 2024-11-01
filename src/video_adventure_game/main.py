@@ -82,18 +82,27 @@ while running:
     screen.blit(scene_manager.get_surface(), (0, 0))
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
-    # debug
+
+
+
+
+
+    # debug elements
     print("------------------------------------------------------------")
     print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.3f} / {scene_duration:.3f}")
     print(f"Clip        : {scene_manager.clip_manager.current_clip.id.ljust(20)} \t {clip_time:.3f} / {clip_duration:.3f}")
-    print(f"Choices     : {",".join([choice.description for choice in scene_manager.current_scene.choices])}")
+    print(f"Choices     : {", ".join([choice.id for choice in scene_manager.current_scene.choices])}")
+    print(f"Menu Choices: {" | ".join([f"{menu_choice.choice.description} {menu_choice.position}" for menu_choice in menu.menu_choices])}")
     print(f"Next Scene  : {scene_manager.next_scene.id}")
     print(f"Menu between {scene_manager.current_scene.menu_start_time:.3f} and "+
           f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.3f} " +
           f"-> {"Visible" if menu.visible else "Hidden"}")
-
+    # debug Progress bar
     pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-5,screen_size[0]*scene_time/scene_duration,5))
-    
+
+
+
+
     # render
     pygame.display.flip()
 

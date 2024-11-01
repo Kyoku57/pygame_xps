@@ -19,21 +19,21 @@ clips.add("HIGHER","abba.mp4",149.5,165)
 scene_resources = SceneResources()
 
 # Scene 1
-scene_resources.add(Scene(clips, "SCENE_1", 3, 10)\
+scene_resources.add(Scene(clips, "SCENE_1", 3, 15)\
     .add_clip("PIANO")\
     .add_clip("I_WORK_ALL_NIGHT")\
     .add_choice("GOTO_SCENE2", "Allez à la scène 2", "SCENE_2")\
     .add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3"))
 
 # Scene 2
-scene_resources.add(Scene(clips, "SCENE_2", 3, 10)\
+scene_resources.add(Scene(clips, "SCENE_2", 3, 15)\
     .add_clip("WEATHLY_MEN")\
     .add_clip("MONEY_MONEY")\
     .add_choice("GOTO_SCENE1", "Allez à la scène 1", "SCENE_1")\
     .add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3"))
 
 # Scene 3
-scene_resources.add(Scene(clips,"SCENE_3", 3, 10)\
+scene_resources.add(Scene(clips,"SCENE_3", 3, 15)\
     .add_clip("AHHHHHHHHHH")\
     .add_clip("HIGHER")\
     .add_choice("GOTO_SCENE1", "Allez à la scène 1", "SCENE_1")\

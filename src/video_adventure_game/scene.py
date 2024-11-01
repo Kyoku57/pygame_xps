@@ -1,8 +1,8 @@
 from clip import ClipManager
 
 class Choice:
-    def __init__(self, choice_id, description, next_scene):
-        self.choice_id = choice_id
+    def __init__(self, id, description, next_scene):
+        self.id = id
         self.description = description
         self.next_scene = next_scene
 
