@@ -93,10 +93,7 @@ while running:
           f"-> {"Visible" if menu.visible else "Hidden"}")
     # debug Progress bar
     pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-5,screen_size[0]*scene_time/scene_duration,5))
-
-
-
-
+    
     # render
     pygame.display.flip()
 
