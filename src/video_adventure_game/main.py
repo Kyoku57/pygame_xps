@@ -43,20 +43,19 @@ while running:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
 
+        # Only if menu is visible
         if menu.visible:
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
-                scene_manager.set_next_scene("SCENE_1")
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_x:
-                scene_manager.set_next_scene("SCENE_2")
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
-                scene_manager.set_next_scene("SCENE_3")
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_v:
-                scene_manager.set_next_scene("SCENE_1")
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_b:
-                scene_manager.set_next_scene("SCENE_2")
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_n:
-                scene_manager.set_next_scene("SCENE_3")
+            for menu_choice in menu.menu_choices:
+                rect = pygame.Rect((menu_choice.position[0]+menu.left, menu_choice.position[1]+menu.top), (menu_choice.width,menu_choice.height))
+                menu_choice.is_focus = rect.collidepoint(pygame.mouse.get_pos())
 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if menu.selected is None:
+                    for menu_choice in menu.menu_choices:
+                        if menu_choice.is_focus is True:
+                            menu.selected = menu_choice
+                            menu_choice.is_selected = True
+                            scene_manager.set_next_scene(menu.selected.choice.next_scene)
     # Update
     scene_manager.update()
 
@@ -82,13 +81,12 @@ while running:
     screen.blit(scene_manager.get_surface(), (0, 0))
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
-
     # debug elements
     print("------------------------------------------------------------")
     print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.3f} / {scene_duration:.3f}")
     print(f"Clip        : {scene_manager.clip_manager.current_clip.id.ljust(20)} \t {clip_time:.3f} / {clip_duration:.3f}")
-    print(f"Choices     : {", ".join([choice.id for choice in scene_manager.current_scene.choices])}")
-    print(f"Menu Choices: {" | ".join([f"{menu_choice.choice.description} {menu_choice.position}" for menu_choice in menu.menu_choices])}")
+    print(f"Choices     : {", ".join([f"{choice.id}" for choice in scene_manager.current_scene.choices])}")
+    print(f"Menu Choices: {" | ".join([f"{menu_choice.choice.description} (Focus:{menu_choice.is_focus},Selected:{menu_choice.is_selected})" for menu_choice in menu.menu_choices])}")
     print(f"Next Scene  : {scene_manager.next_scene.id}")
     print(f"Menu between {scene_manager.current_scene.menu_start_time:.3f} and "+
           f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.3f} " +

@@ -3,7 +3,9 @@ import time
 from scene import Scene, Choice
 
 BANNER_COLOR = (50,50,50)
-ELEMENT_COLOR = (100,100,100)
+UNFOCUS_ELEMENT_COLOR = (100,100,100)
+FOCUS_ELEMENT_COLOR = (255,255,0)
+SELECTED_ELEMENT_COLOR = (0,255,255)
 TEXT_COLOR = (200,200,200)
 
 class MenuChoice:
@@ -16,13 +18,30 @@ class MenuChoice:
         # pygame objects
         self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
         self.rect = pygame.Rect((0,0), dimension)
-        self.rendered_text = self.font.render(f"{choice.description}", True, TEXT_COLOR)
+        self.is_focus = False
+        self.is_selected = False
 
-    def get_surface(self):
+    def reset(self):
+        self.is_focus = False
+        self.is_selected = False
+
+    def color(self, vote_allowed):
+        if self.is_selected is True:
+            return SELECTED_ELEMENT_COLOR
+        else:
+            if self.is_focus is True and vote_allowed is True:
+                return FOCUS_ELEMENT_COLOR
+            else:
+                return UNFOCUS_ELEMENT_COLOR
+
+    def get_surface(self, vote_allowed):
         """Get surface of the MenuChoice object"""
         self.surface.fill(pygame.SRCALPHA)
         self.surface=self.surface.convert_alpha()
-        pygame.draw.rect(self.surface, ELEMENT_COLOR, self.rect, 2)
+        # Render Rect
+        pygame.draw.rect(self.surface, self.color(vote_allowed), self.rect, 2)
+        # Render Text
+        self.rendered_text = self.font.render(f"{self.choice.description}", True, TEXT_COLOR)
         self.surface.blit(self.rendered_text, (5,5))
         return self.surface
 
@@ -51,6 +70,8 @@ class Menu:
         # surfaces
         self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
         self.banner = pygame.Rect(0, 0, self.width, self.height)
+        # Current choice
+        self.selected = None
 
     def toggle(self):
         if self.visible is True:
@@ -59,7 +80,10 @@ class Menu:
             self.show()
 
     def update_menu_choices_from_scene(self, scene: Scene):
+        # Init
         self.menu_choices = []
+        self.selected = None
+
         index = 0
         element_width = (self.width - ((len(scene.choices)+1)*self.margin)) / len(scene.choices)
         element_heigth = (self.height - 2*self.margin)
@@ -97,6 +121,7 @@ class Menu:
                 self.visible = False
             else:
                 self.top += 2
+        
 
     def get_surface(self):
         self.surface.fill(pygame.SRCALPHA)
@@ -106,5 +131,5 @@ class Menu:
         # Choices rendering
         choice: Choice
         for choice in self.menu_choices:
-            self.surface.blit(choice.get_surface(), choice.position)
+            self.surface.blit(choice.get_surface(self.selected is None), choice.position)
         return self.surface
