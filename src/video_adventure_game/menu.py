@@ -11,9 +11,10 @@ class MenuChoice:
         self.rendered_choice = self.font.render(f"{choice.description}", True, GREY)
         self.width = 0
         self.position = (0,0)
-        self.rect = pygame.Rect(0, 0, self.width, self.height)
+        #self.rect = pygame.Rect(0, 0, self.width, self.height)
 
     def get_surface(self):
+        pass
 
 
 
