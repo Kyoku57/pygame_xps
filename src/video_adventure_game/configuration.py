@@ -23,7 +23,8 @@ scene_resources.add(Scene(clips, "SCENE_1", 3, 15)\
     .add_clip("PIANO")\
     .add_clip("I_WORK_ALL_NIGHT")\
     .add_choice("GOTO_SCENE2", "Allez à la scène 2", "SCENE_2")\
-    .add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3"))
+    .add_choice("GOTO_SCENE3", "Allez à la scène 3", "SCENE_3")\
+    .add_choice("GOTO_SCENE4", "Allez à la scène 4", "SCENE_4"))
 
 # Scene 2
 scene_resources.add(Scene(clips, "SCENE_2", 3, 15)\

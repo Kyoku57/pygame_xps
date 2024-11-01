@@ -5,17 +5,16 @@ from scene import Scene, Choice
 GREY = (200,200,200)
 
 class MenuChoice:
-    def __init__(self, font, choice: Choice):
+    def __init__(self, font, choice: Choice, position, dimension):
         self.font = font
         self.choice = choice
         self.rendered_choice = self.font.render(f"{choice.description}", True, GREY)
-        self.width = 0
-        self.position = (0,0)
-        #self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.width, self.height = dimension
+        self.position = position
+        self.rect = pygame.Rect(self.position, dimension)
 
     def get_surface(self):
         pass
-
 
 
 class Menu:
@@ -23,6 +22,7 @@ class Menu:
     def __init__(self, init_position, dimension):
         # dimension
         self.width,self.height = dimension
+        self.margin = 10
         # position
         self.left,self.top = init_position
         self.init_left,self.init_top = init_position
@@ -48,17 +48,17 @@ class Menu:
             self.show()
 
     def update_menu_choices_from_scene(self, scene: Scene):
-        top, left = 10, 20
-        index = 0
-        total = len(scene.choices)
-        element_width = (self.width - (total*left)) / total
         self.menu_choices = []
+        index = 0
+        element_width = (self.width - ((len(scene.choices)+1)*self.margin)) / len(scene.choices)
+        element_heigth = (self.height - 2*self.margin)
         for choice in scene.choices:
             index = index + 1
-            element = MenuChoice(self.font, choice)
-            element.width = element.width
-            element.position = (( index*left + (index-1)*element_width ), top)
-            self.menu_choices.append(element)
+            # Calculate position
+            position = (index*self.margin + (index-1)*element_width, self.margin)
+            # add choice
+            menu_choice = MenuChoice(self.font, choice, position, (element_width, element_heigth))
+            self.menu_choices.append(menu_choice)
 
     def show(self):
         self.animation_hide=False
@@ -92,7 +92,9 @@ class Menu:
         self.surface=self.surface.convert_alpha()
         # Banner with rounded edge
         pygame.draw.rect(self.surface, pygame.Color(50,50,50), self.banner, 0, 10, 10, 10, 10)
-        # CHoices rendering
+        # Choices rendering
+        choice: Choice
         for choice in self.menu_choices:
-            self.surface.blit(choice.rendered_choice, choice.position)
+            pygame.draw.rect(self.surface, pygame.Color(150,150,150), choice.rect, 0)
+            #self.surface.blit(choice.rendered_choice, choice.position)
         return self.surface
