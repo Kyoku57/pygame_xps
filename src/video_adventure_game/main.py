@@ -91,6 +91,8 @@ while running:
             scene_manager.set_next_scene(menu.selected.choice.next_scene)
         menu.hide()
     menu.update()
+    menu.update_progress_bar(scene_time-scene_manager.current_scene.menu_start_time, 
+                             scene_manager.current_scene.menu_duration)
 
     # Draw the surface onto the window
     screen.fill(BLACK)
@@ -109,7 +111,7 @@ while running:
           f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.2f} " +
           f"-> {"Visible" if menu.visible else "Hidden"}")
     # debug Progress bar
-    pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-5,screen_size[0]*scene_time/scene_duration,5))
+    pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-3,screen_size[0]*scene_time/scene_duration,3))
 
     # render
     pygame.display.flip()

@@ -123,7 +123,12 @@ class Menu:
                 self.visible = False
             else:
                 self.top += 2
-        
+
+    def update_progress_bar(self, time, duration):
+        time = 0 if time < 0 else time
+        self.progress_bar_color = (255, int(255*(1-time/duration)), int(255*(1-time/duration)))
+        self.progress_bar_rect = pygame.Rect(0,self.height-3,self.width*(1-time/duration),3)
+        self.progress_bar_rect.center = (self.width/2, self.height-3)
 
     def get_surface(self):
         self.surface.fill(pygame.SRCALPHA)
@@ -134,4 +139,7 @@ class Menu:
         choice: Choice
         for choice in self.menu_choices:
             self.surface.blit(choice.get_surface(self.selected is None), choice.position)
+        # Add progress bar
+        pygame.draw.rect(self.surface, self.progress_bar_color, self.progress_bar_rect)
+
         return self.surface
