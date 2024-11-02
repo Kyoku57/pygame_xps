@@ -1,6 +1,6 @@
 import pygame
 from menu import Menu
-from configuration import scene_resources
+from configuration_gabby import scene_resources, screen_size
 from scene import SceneManager
 
 # Global variables
@@ -13,11 +13,8 @@ class History:
 # Initialize Pygame
 pygame.init()
 
-# Screen size
-screen_size=(1000,500)
-
 # Init Current scene 
-scene_manager = SceneManager(scene_resources,"SCENE_1")
+scene_manager = SceneManager(scene_resources,scene_resources.first_id)
 
 # init menu
 menu_dimension=(screen_size[0]-50,60)
@@ -56,6 +53,7 @@ while running:
                             menu.selected = menu_choice
                             menu_choice.is_selected = True
                             scene_manager.set_next_scene(menu.selected.choice.next_scene)
+    
     # Update
     scene_manager.update()
 
@@ -82,6 +80,9 @@ while running:
     screen.blit(scene_manager.get_surface(), scene_manager_rect)
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
+    # render
+    pygame.display.flip()
+
     # debug elements
     print("------------------------------------------------------------")
     print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.3f} / {scene_duration:.3f}")
@@ -94,9 +95,6 @@ while running:
           f"-> {"Visible" if menu.visible else "Hidden"}")
     # debug Progress bar
     pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-5,screen_size[0]*scene_time/scene_duration,5))
-    
-    # render
-    pygame.display.flip()
 
 # Quit Pygame
 pygame.quit()

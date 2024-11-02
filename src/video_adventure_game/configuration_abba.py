@@ -2,6 +2,9 @@ import os
 from clip import ClipResources
 from scene import Scene, SceneResources
 
+# Screen size
+screen_size=(1000,500)
+
 # assets and cache
 assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
 cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")

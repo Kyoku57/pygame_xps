@@ -8,6 +8,12 @@ python -m pip install pygame
 python -m pip install moviepy
 ```
 
+## Resize video
+
+```bash
+ffmpeg -i PXL_20241102_124716730.TS.mp4 -s 800x450 -filter:v fps=25 PXL_20241102_124716730.TS.resized.mp4
+```
+
 ## Random links
 
 - https://ryanstutorials.net/pygame-tutorial/pygame-keyboard-input.php
@@ -22,4 +28,4 @@ python -m pip install moviepy
 - https://www.pygame.org/docs/ref/rect.html#pygame.Rect.collideobjects
 - https://medium.com/featurepreneur/extracting-audio-from-video-using-pythons-moviepy-library-e351cd652ab8 
 - https://stackoverflow.com/questions/23982907/how-to-center-text-in-pygame 
-
+- https://www.malekal.com/comment-utiliser-ffmpeg-exemples/

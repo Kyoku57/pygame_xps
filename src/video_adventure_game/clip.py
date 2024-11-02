@@ -10,7 +10,7 @@ class ClipResources:
         self.assets_dir=assets_dir
         self.cache_dir=cache_dir
 
-    def add(self, clip_id, video_filename, start, end):
+    def add(self, clip_id, video_filename, start=0, end=0):
         """Add a new clip into resources"""
         if clip_id in self.clips.keys():
             raise NameError(f"{clip.id} is already used !!!")
@@ -30,7 +30,7 @@ class ClipResources:
 
 class Clip:
     """Clip that represent a subset of a video"""
-    def __init__(self, id, cache_path, clip, start, end):
+    def __init__(self, id, cache_path, clip, start=0, end=0):
         # time-management
         self.id=id
         self.start,self.end=start,end
@@ -40,11 +40,15 @@ class Clip:
         self.cache_path=cache_path
         # video subclip
         self.clip=clip
-        self.clip=self.clip.subclip(self.start, self.end)
-        self.frame=self.clip.get_frame(t=self.time)
+        if end > 0:
+            self.clip = self.clip.subclip(self.start, self.end)
+        else:
+            self.start = 0
+            self.duration = self.clip.duration
+        self.frame = self.clip.get_frame(t=self.time)
         # audio
-        self.audio=None
-        self.audio_filename=os.path.join(self.cache_path,
+        self.audio = None
+        self.audio_filename = os.path.join(self.cache_path,
             self.id+"."+str(self.start)+"."+str(self.end)+".wav")
         self.cache_audio()
 
@@ -85,6 +89,7 @@ class ClipManager:
 
     def get_surface(self):
         """Export updated Surface"""
+        self.surface=pygame.surfarray.make_surface(self.current_clip.frame.swapaxes(0, 1)) # TODO Pas genial
         pygame.surfarray.blit_array(self.surface, self.current_clip.frame.swapaxes(0, 1))
         return self.surface
     
