@@ -105,7 +105,19 @@ scene_resources.add(Scene(clips,"RETOUR_CHAMBRE", 3, 3)\
     .add_clip("GAB_SE_COUCHE")\
     .add_choice("GO_TO_DEPART", "Retour au lit", "REVEIL_DE_GAB"))
 
-# Check coherence with time
+
+
+
+# ------------------ CHECK -------------------------------
+
+print("Check coherence with ...")
 for scene_id,scene in scene_resources.scenes.items():
-    print(f"scene {scene_id} is about {scene.duration()} seconds")
+    scene.duration()
+print(" ... durations: OK")
+
+for scene_id,scene in scene_resources.scenes.items():
+    for choice in scene.choices:
+        scene_resources.get(choice.next_scene)
+print(" ... scene in choice: OK")
+
 print("EVERYTHING IS OK ! Good Game !")

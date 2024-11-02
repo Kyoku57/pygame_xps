@@ -15,6 +15,7 @@ pygame.init()
 
 # Prepare SCREEN
 screen=pygame.display.set_mode(screen_size, 0, 32)
+#screen=pygame.display.set_mode(screen_size, pygame.RESIZABLE)
 #screen=pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 screen_size=(screen.get_rect().width, screen.get_rect().height)
 pygame.display.set_caption("Clip/Scene test")
@@ -23,7 +24,7 @@ pygame.display.set_caption("Clip/Scene test")
 scene_manager = SceneManager(scene_resources,scene_resources.first_id)
 
 # init menu
-menu_dimension=(screen_size[0]-50,60)
+menu_dimension=(screen_size[0]-100,60)
 menu_init_position=((screen_size[0]-menu_dimension[0])/2, screen_size[1])
 menu=Menu(menu_init_position, menu_dimension)
 
@@ -97,9 +98,6 @@ while running:
     screen.blit(scene_manager.get_surface(), scene_manager_rect)
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
-    # render
-    pygame.display.flip()
-
     # debug elements
     print("------------------------------------------------------------")
     print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.2f} / {scene_duration:.2f}")
@@ -112,6 +110,9 @@ while running:
           f"-> {"Visible" if menu.visible else "Hidden"}")
     # debug Progress bar
     pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-5,screen_size[0]*scene_time/scene_duration,5))
+
+    # render
+    pygame.display.flip()
 
 # Quit Pygame
 pygame.quit()
