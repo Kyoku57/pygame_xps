@@ -14,9 +14,9 @@ class History(list):
 pygame.init()
 
 # Prepare SCREEN
-#screen=pygame.display.set_mode(screen_size, 0, 32)
+screen=pygame.display.set_mode(screen_size, 0, 32)
 #screen=pygame.display.set_mode(screen_size, pygame.RESIZABLE) # Forget it :-)
-screen=pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+#screen=pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 pygame.display.set_caption("Clip/Scene test")
 screen_size=(screen.get_rect().width, screen.get_rect().height)
 
