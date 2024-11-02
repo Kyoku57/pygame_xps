@@ -3,7 +3,7 @@ from clip import ClipResources
 from scene import Scene, SceneResources
 
 # Screen size
-screen_size=(830,450)
+screen_size=(830,500)
 
 # assets and cache
 assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
@@ -45,7 +45,7 @@ clips.add("RAPH_VA_FRIGO", "PXL_20241102_130858713.TSR.mp4")
 # Create Scenes inventory
 scene_resources = SceneResources()
 
-scene_resources.add(Scene(clips, "REVEIL_DE_GAB", 15, 9)\
+scene_resources.add(Scene(clips, scene_id="REVEIL_DE_GAB", menu_start_time=15, menu_duration=9)\
     .add_clip("GAB_DORT")\
     .add_clip("RAPH_ENTRE")\
     .add_clip("GAB_DORT_ZOOM")

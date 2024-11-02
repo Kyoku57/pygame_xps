@@ -100,7 +100,8 @@ class SceneManager:
                 self.clip_index = 0
                 self.is_starting = True
             # Next clip
-            self.clip_manager.current_clip = self.current_scene.ordered_clips[self.clip_index]
+            next_clip = self.current_scene.ordered_clips[self.clip_index]
+            self.clip_manager.current_clip = next_clip
             
 
     def set_next_scene(self, scene_id):
