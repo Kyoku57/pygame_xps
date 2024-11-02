@@ -99,6 +99,7 @@ class SceneManager:
                 self.current_scene = self.next_scene
                 self.clip_index = 0
                 self.is_starting = True
+            # Next clip
             self.clip_manager.current_clip = self.current_scene.ordered_clips[self.clip_index]
             
 
