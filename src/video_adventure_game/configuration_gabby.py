@@ -3,7 +3,7 @@ from clip import ClipResources
 from scene import Scene, SceneResources
 
 # Screen size
-screen_size=(830,500)
+screen_size=(800,450)
 
 # assets and cache
 assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
@@ -36,7 +36,7 @@ clips.add("GAB_FINI_BANANE", "PXL_20241102_125717425.TSR.mp4")
 clips.add("GAB_MONTE_ESCALIER", "PXL_20241102_125734039.TSR.mp4")
 clips.add("GAB_VA_VERS_CHAMBRE", "PXL_20241102_125824270.TSR.mp4")
 clips.add("GAB_SE_COUCHE", "PXL_20241102_125846406.TSR.mp4")
-clips.add("GAB_A_FAIM", "PXL_20241102_130223286.TSR.mp4",2,8)
+clips.add("GAB_A_FAIM", "PXL_20241102_130223286.TSR.mp4",1,8)
 clips.add("GAB_DEMANDE_A_RAPH", "PXL_20241102_130339168.TSR.mp4")
 clips.add("GAB_ALLER_J_AI_FAIM", "PXL_20241102_130651802.TSR.mp4")
 clips.add("RAPH_MANGE_TA_MAIN", "PXL_20241102_130733424.TSR.mp4")

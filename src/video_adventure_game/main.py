@@ -96,14 +96,26 @@ while running:
 
     # Draw the surface onto the window
     screen.fill(BLACK)
-    scene_manager_rect = scene_manager.get_surface().get_rect(center=(screen_size[0]/2, screen_size[1]/2))
-    screen.blit(scene_manager.get_surface(), scene_manager_rect)
+    if (scene_manager.get_surface().get_size() == screen_size):
+        screen.blit(scene_manager.get_surface(), scene_manager.get_surface().get_rect(center=(screen_size[0]/2, screen_size[1]/2)))
+    else:
+        ratio_source = scene_manager.get_surface().get_size()[0]/scene_manager.get_surface().get_size()[1]
+        ratio_screen = screen_size[0]/screen_size[1]
+        if ratio_source > ratio_screen:
+            target_width = screen_size[0]
+            target_height = screen_size[0] / ratio_source
+        else:
+            target_height = screen_size[1]
+            target_width = screen_size[1] * ratio_source
+        resized_video = pygame.transform.scale(scene_manager.get_surface(), (target_width, target_height))
+        resized_rect = resized_video.get_rect(center=(screen_size[0]/2, screen_size[1]/2))
+        screen.blit(resized_video, resized_rect)
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
     # debug elements
     print("------------------------------------------------------------")
     print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.2f} / {scene_duration:.2f}")
-    print(f"Clip        : {scene_manager.clip_manager.current_clip.id.ljust(20)} \t {clip_time:.2f} / {clip_duration:.2f}")
+    print(f"Clip        : {scene_manager.clip_manager.current_clip.id.ljust(20)} \t {clip_time:.2f} / {clip_duration:.2f} - Resized: {not(scene_manager.get_surface().get_size() == screen_size)}")
     print(f"Choices     : {", ".join([f"{choice.id}" for choice in scene_manager.current_scene.choices])} - Only one : {only_one_choice}")
     print(f"Menu Choices: {" | ".join([f"{menu_choice.choice.description} (Focus:{menu_choice.is_focus},Selected:{menu_choice.is_selected})" for menu_choice in menu.menu_choices])}")
     print(f"Next Scene  : {scene_manager.next_scene.id}")
