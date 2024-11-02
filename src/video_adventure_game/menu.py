@@ -9,6 +9,7 @@ SELECTED_ELEMENT_COLOR = (0,255,255)
 TEXT_COLOR = (200,200,200)
 
 class MenuChoice:
+    """Define a menu choice element"""
     def __init__(self, font, choice: Choice, position, dimension):
         """Create a menu choice element"""
         self.font = font
@@ -42,7 +43,8 @@ class MenuChoice:
         pygame.draw.rect(self.surface, self.color(vote_allowed), self.rect, 2)
         # Render Text
         self.rendered_text = self.font.render(f"{self.choice.description}", True, TEXT_COLOR)
-        self.surface.blit(self.rendered_text, (5,5))
+        text_rec = self.rendered_text.get_rect(center=(self.surface.get_width()/2, self.surface.get_height()/2))
+        self.surface.blit(self.rendered_text, text_rec)
         return self.surface
 
 

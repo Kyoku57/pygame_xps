@@ -21,4 +21,5 @@ python -m pip install moviepy
 - https://www.reddit.com/r/pygame/comments/wpotwv/how_do_i_make_an_entity_move_forward_relative_to/
 - https://www.pygame.org/docs/ref/rect.html#pygame.Rect.collideobjects
 - https://medium.com/featurepreneur/extracting-audio-from-video-using-pythons-moviepy-library-e351cd652ab8 
+- https://stackoverflow.com/questions/23982907/how-to-center-text-in-pygame 
 

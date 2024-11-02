@@ -78,7 +78,8 @@ while running:
 
     # Draw the surface onto the window
     screen.fill(BLACK)
-    screen.blit(scene_manager.get_surface(), (0, 0))
+    scene_manager_rect = scene_manager.get_surface().get_rect(center=(screen_size[0]/2, screen_size[1]/2))
+    screen.blit(scene_manager.get_surface(), scene_manager_rect)
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
     # debug elements
