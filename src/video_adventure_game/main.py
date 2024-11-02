@@ -111,7 +111,7 @@ while running:
           f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.2f} " +
           f"-> {"Visible" if menu.visible else "Hidden"}")
     # debug Progress bar
-    pygame.draw.rect(screen, pygame.Color(255,int(255*scene_time/scene_duration),0), pygame.Rect(0,screen_size[1]-3,screen_size[0]*scene_time/scene_duration,3))
+    pygame.draw.rect(screen, pygame.Color(255,255,100), pygame.Rect(0,0,screen_size[0]*scene_time/scene_duration,2))
 
     # render
     pygame.display.flip()

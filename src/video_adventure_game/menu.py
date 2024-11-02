@@ -72,6 +72,9 @@ class Menu:
         # surfaces
         self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
         self.banner = pygame.Rect(0, 0, self.width, self.height)
+        self.progress_bar_color = (255, 255, 255)
+        self.progress_bar_rect = pygame.Rect(0,0,0,5)
+
         # Current choice
         self.selected = None
 
@@ -126,9 +129,10 @@ class Menu:
 
     def update_progress_bar(self, time, duration):
         time = 0 if time < 0 else time
+        time = duration if time > duration else time
         self.progress_bar_color = (255, int(255*(1-time/duration)), int(255*(1-time/duration)))
-        self.progress_bar_rect = pygame.Rect(0,self.height-3,self.width*(1-time/duration),3)
-        self.progress_bar_rect.center = (self.width/2, self.height-3)
+        self.progress_bar_rect.width = self.width*(1-time/duration)
+        self.progress_bar_rect.center = (self.width/2, self.height-5)
 
     def get_surface(self):
         self.surface.fill(pygame.SRCALPHA)
