@@ -1,3 +1,4 @@
+import pygame
 from clip import ClipManager
 
 class Choice:
@@ -121,9 +122,20 @@ class SceneManager:
     def set_next_scene(self, scene_id):
         self.next_scene = self.scene_resources.get(scene_id)
 
-    def get_surface(self):
-        """Export updated Surface"""
-        return self.clip_manager.get_surface()
+    def get_surface(self, screen_size):
+        """Export updated Surface depends on screen size for scale"""
+        if (self.clip_manager.get_surface().get_size() == screen_size):
+            return self.clip_manager.get_surface()
+        else:
+            ratio_source = self.clip_manager.get_surface().get_size()[0]/self.clip_manager.get_surface().get_size()[1]
+            ratio_screen = screen_size[0]/screen_size[1]
+            if ratio_source > ratio_screen:
+                target_width = screen_size[0]
+                target_height = screen_size[0] / ratio_source
+            else:
+                target_height = screen_size[1]
+                target_width = screen_size[1] * ratio_source
+            return pygame.transform.scale(self.clip_manager.get_surface(), (target_width, target_height))
 
     def get_time_by_duration(self):
         clip_time, clip_duration = self.clip_manager.get_time_by_duration()

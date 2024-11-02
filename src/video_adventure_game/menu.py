@@ -63,11 +63,14 @@ class MenuChoice:
 
 class Menu:
     """Menu"""
-    def __init__(self, init_position, dimension):
+    def __init__(self, screen_size):
         """Create the menu 
             - should be created once
         """
         # dimension
+        dimension=(screen_size[0]-100,60)
+        init_position=((screen_size[0]-dimension[0])/2, screen_size[1])
+
         self.width,self.height = dimension
         self.margin = 10
         # position
