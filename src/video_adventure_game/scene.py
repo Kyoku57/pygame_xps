@@ -10,6 +10,7 @@ class Choice:
 class Scene:
     """A scene is a chain of clips and choices. It contains index"""
     def __init__(self, clips_resources, scene_id, menu_start_time, menu_duration):
+        """Init scene object"""
         # Cache data
         self.id = scene_id
         self.ordered_clips = []
@@ -19,22 +20,35 @@ class Scene:
         self.menu_duration = menu_duration
         # Choices management
         self.choices = []
-        self.default_choice = None
+        self.default_choice = 0
 
     def add_clip(self, clip_id):
+        """Add a clip to the scene"""
         clip = self.clips_resources.get(clip_id)
         self.ordered_clips.append(clip)
         return self
 
     def add_choice(self, choice_id, description, next_scene):
+        """Add a choice to the scene"""
         choice = Choice(choice_id, description, next_scene)
         self.choices.append(choice)
         return self
+    
+    def set_default_choice(self, user_index):
+        """Set the default choice
+        the choice in scene object are set from 0 to N-1
+        but the user, when it configures, set the number from 1 to N
+        that why I soustract index from one unit
+        """
+        self.default_choice = user_index-1
+        return self
 
     def duration_to_index(self, index):
+        """Get duration from beginning of the scene, to the time index"""
         return sum([self.ordered_clips[i].duration for i in range(index)])
 
     def duration(self):
+        """Get total duration and perform check on duration from menu and scene"""
         scene_duration = sum([clip.duration for clip in self.ordered_clips])
         if self.menu_start_time + self.menu_duration > scene_duration:
             raise Exception(f"In scene {self.id}, Menu start({self.menu_start_time}) + Menu duration({self.menu_duration}) are superior to Scene duration({scene_duration})") 

@@ -29,7 +29,8 @@ scene_resources.add(Scene(clips, "REVEIL_DE_GAB", 10, 10)\
     .add_choice("BOUCLE1", "Boucle infinie", "REVEIL_DE_GAB")\
     .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB")\
     .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB")\
-    .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB"))
+    .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB")\
+    .set_default_choice(1))
 
 
 

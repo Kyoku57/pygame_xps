@@ -6,7 +6,7 @@ from scene import SceneManager
 # Global variables
 BLACK=(0,0,0)
 
-class History:
+class History(list):
     """Define history of choice"""
     pass
 
@@ -86,7 +86,7 @@ while running:
         # If menu duration is over and not choice done, choose first
         if (menu.selected is None and\
             scene_time > scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration):
-            menu.selected = menu.menu_choices[0]
+            menu.selected = menu.menu_choices[scene_manager.current_scene.default_choice]
             menu.selected.is_selected = True
             scene_manager.set_next_scene(menu.selected.choice.next_scene)
         menu.hide()

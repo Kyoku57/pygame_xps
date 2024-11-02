@@ -51,7 +51,9 @@ class MenuChoice:
 class Menu:
     """Menu"""
     def __init__(self, init_position, dimension):
-        """Create the menu - should be created once"""
+        """Create the menu 
+            - should be created once
+        """
         # dimension
         self.width,self.height = dimension
         self.margin = 10
@@ -73,16 +75,9 @@ class Menu:
         self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
         self.banner = pygame.Rect(0, 0, self.width, self.height)
         self.progress_bar_color = (255, 255, 255)
-        self.progress_bar_rect = pygame.Rect(0,0,0,5)
-
+        self.progress_bar_rect = pygame.Rect(0,0,0,4)
         # Current choice
         self.selected = None
-
-    def toggle(self):
-        if self.visible is True:
-            self.hide()
-        else:
-            self.show()
 
     def update_menu_choices_from_scene(self, scene: Scene):
         # Init
@@ -101,14 +96,25 @@ class Menu:
             self.menu_choices.append(menu_choice)
 
     def show(self):
+        """Init menu show animation"""
         self.animation_hide=False
         self.animation_show=True
 
     def hide(self):
+        """Init menu hide animation"""
         self.animation_hide=True
         self.animation_show=False
 
+    def toggle(self):
+        """Change status of the menu"""
+        if self.visible is True:
+            self.hide()
+        else:
+            self.show()
+
     def update(self):
+        """Update animation of the menu
+        """
         limit_high = self.init_top-self.height-10
         limit_low = self.init_top
         if self.animation_show is True:
@@ -128,6 +134,8 @@ class Menu:
                 self.top += 2
 
     def update_progress_bar(self, time, duration):
+        """update time for menu progress bar
+        """
         time = 0 if time < 0 else time
         time = duration if time > duration else time
         self.progress_bar_color = (255, int(255*(1-time/duration)), int(255*(1-time/duration)))
@@ -135,6 +143,9 @@ class Menu:
         self.progress_bar_rect.center = (self.width/2, self.height-5)
 
     def get_surface(self):
+        """Get surface menu object
+        """
+        # fill surface with transparency
         self.surface.fill(pygame.SRCALPHA)
         self.surface=self.surface.convert_alpha()
         # Banner with rounded edge
@@ -144,6 +155,6 @@ class Menu:
         for choice in self.menu_choices:
             self.surface.blit(choice.get_surface(self.selected is None), choice.position)
         # Add progress bar
-        pygame.draw.rect(self.surface, self.progress_bar_color, self.progress_bar_rect)
+        pygame.draw.rect(self.surface, self.progress_bar_color, self.progress_bar_rect, 0, 2, 2, 2, 2)
 
         return self.surface
