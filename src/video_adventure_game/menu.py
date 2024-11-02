@@ -2,11 +2,15 @@ import pygame
 import time
 from scene import Scene, Choice
 
-BANNER_COLOR = (50,50,50)
-UNFOCUS_ELEMENT_COLOR = (100,100,100)
-FOCUS_ELEMENT_COLOR = (255,255,0)
-SELECTED_ELEMENT_COLOR = (0,255,255)
-TEXT_COLOR = (200,200,200)
+BANNER_COLOR = (0,0,0)
+
+UNFOCUS_BOX_COLOR = (0,0,0)
+FOCUS_BOX_COLOR = (255,255,0)
+SELECTED_BOX_COLOR = (0,255,255)
+
+UNFOCUS_TEXT_COLOR = (150,150,150)
+FOCUS_TEXT_COLOR = (200,200,0)
+SELECTED_TEXT_COLOR = (255,255,255)
 
 class MenuChoice:
     """Define a menu choice element"""
@@ -26,23 +30,32 @@ class MenuChoice:
         self.is_focus = False
         self.is_selected = False
 
-    def color(self, vote_allowed):
+    def color_box(self, vote_allowed):
         if self.is_selected is True:
-            return SELECTED_ELEMENT_COLOR
+            return SELECTED_BOX_COLOR
         else:
             if self.is_focus is True and vote_allowed is True:
-                return FOCUS_ELEMENT_COLOR
+                return FOCUS_BOX_COLOR
             else:
-                return UNFOCUS_ELEMENT_COLOR
+                return UNFOCUS_BOX_COLOR
+            
+    def color_text(self, vote_allowed):
+        if self.is_selected is True:
+            return SELECTED_TEXT_COLOR
+        else:
+            if self.is_focus is True and vote_allowed is True:
+                return FOCUS_TEXT_COLOR
+            else:
+                return UNFOCUS_TEXT_COLOR
 
     def get_surface(self, vote_allowed):
         """Get surface of the MenuChoice object"""
         self.surface.fill(pygame.SRCALPHA)
         self.surface=self.surface.convert_alpha()
         # Render Rect
-        pygame.draw.rect(self.surface, self.color(vote_allowed), self.rect, 2)
+        pygame.draw.rect(self.surface, self.color_box(vote_allowed), self.rect, 2, 10,10,10,10)
         # Render Text
-        self.rendered_text = self.font.render(f"{self.choice.description}", True, TEXT_COLOR)
+        self.rendered_text = self.font.render(f"{self.choice.description}", True, self.color_text(vote_allowed))
         text_rec = self.rendered_text.get_rect(center=(self.surface.get_width()/2, self.surface.get_height()/2))
         self.surface.blit(self.rendered_text, text_rec)
         return self.surface

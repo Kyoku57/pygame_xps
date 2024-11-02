@@ -31,20 +31,28 @@ class ClipResources:
 class Clip:
     """Clip that represent a subset of a video"""
     def __init__(self, id, cache_path, clip, start=0, end=0):
-        # time-management
-        self.id=id
-        self.start,self.end=start,end
-        self.duration=self.end-self.start
-        self.time=0
+        """Init clip object"""
+        self.id = id
         # path
-        self.cache_path=cache_path
-        # video subclip
-        self.clip=clip
-        if end > 0:
-            self.clip = self.clip.subclip(self.start, self.end)
+        self.cache_path = cache_path
+        # video clip
+        self.clip = clip
+        # Manage end time
+        self.start = start
+        source_duration = self.clip.duration
+        if end == 0:
+            self.end = source_duration
+        elif end < 0:
+            self.end = self.clip.duration+end
+        elif end > source_duration:
+            self.end = source_duration
         else:
-            self.start = 0
-            self.duration = self.clip.duration
+            self.end = end
+        # if not change on time, dont't create subclip
+        if start !=0 or end !=0:
+            self.clip = self.clip.subclip(self.start, self.end)
+        self.duration = self.clip.duration
+        self.time = 0            
         self.frame = self.clip.get_frame(t=self.time)
         # audio
         self.audio = None

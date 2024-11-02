@@ -1,6 +1,6 @@
 import pygame
 from menu import Menu
-from configuration_test import scene_resources, screen_size
+from configuration_gabby import scene_resources, screen_size
 from scene import SceneManager
 
 # Global variables
