@@ -3,7 +3,7 @@ from clip import ClipResources
 from scene import Scene, SceneResources
 
 # Screen size
-screen_size=(832,418)
+screen_size=(830,450)
 
 # assets and cache
 assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
@@ -13,10 +13,10 @@ cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
 clips = ClipResources(assets_dir,cache_dir)
 clips.add("GAB_DORT", "PXL_20241102_124442799.TSR.mp4")
 clips.add("RAPH_ENTRE", "PXL_20241102_124508854.TSR.mp4")
-clips.add("GAB_DORT_ZOOM", "PXL_20241102_124530530.TSR")
+clips.add("GAB_DORT_ZOOM", "PXL_20241102_124530530.TSR.mp4")
 clips.add("RAPH_REVEILLE_GENTIMENT", "PXL_20241102_124603774.TSR.mp4")
 clips.add("RAPH_REVEILLE_FORT", "PXL_20241102_124635064.TSR.mp4")
-clips.add("GAB_LEVE_DOUX", "PXL_20241102_124716730.TS.resized.mp4")
+clips.add("GAB_LEVE_DOUX", "PXL_20241102_124716730.TSR.mp4")
 clips.add("GAB_LEVE_FURY", "PXL_20241102_124803377.TSR.mp4")
 clips.add("GAB_SALLE_DE_BAIN", "PXL_20241102_124915028.TSR.mp4")
 clips.add("GAB_SALLE_DE_BAIN_SORTIE", "PXL_20241102_124948340.TSR.mp4")
@@ -52,7 +52,7 @@ scene_resources.add(Scene(clips, "REVEIL_DE_GAB", 15, 9)\
     .add_choice("REVEILLE_BRUTAL", "Réveiller fort !!", "REVEIL_FORT")\
     .add_choice("REVEILLE_DOUX", "Réveiller avec douceur", "REVEIL_DOUX"))
 
-scene_resources.add(Scene(clips, "REVEIL_DOUX", 3, 3)\
+scene_resources.add(Scene(clips, "REVEIL_DOUX", 30, 10)\
     .add_clip("RAPH_REVEILLE_GENTIMENT")\
     .add_clip("GAB_LEVE_DOUX")\
     .add_clip("GAB_A_FAIM")\
@@ -77,7 +77,7 @@ scene_resources.add(Scene(clips,"DESCEND_EN_BAS", 3, 3)\
     .add_clip("RAPH_VA_FRIGO")\
     .add_choice("DESCEND_EN_BAS", "Descends au frigo", "FRIGO"))
 
-scene_resources.add(Scene(clips,"FRIGO", 3, 3)\
+scene_resources.add(Scene(clips,"FRIGO", 26, 15)\
     .add_clip("GAB_ESCALIER_FRIGO")\
     .add_clip("GAB_DEVANT_FRIGO")\
     .add_clip("ZOOM_COMPOTE")\
@@ -100,6 +100,7 @@ scene_resources.add(Scene(clips,"BANANE", 3, 3)\
     .add_choice("RETOUR_CHAMBRE", "Manger de la compote", "RETOUR_CHAMBRE"))
 
 scene_resources.add(Scene(clips,"RETOUR_CHAMBRE", 3, 3)\
+    .add_clip("GAB_MONTE_ESCALIER")\
     .add_clip("GAB_VA_VERS_CHAMBRE")\
     .add_clip("GAB_SE_COUCHE")\
     .add_choice("GO_TO_DEPART", "Retour au lit", "REVEIL_DE_GAB"))

@@ -41,19 +41,21 @@ while running:
             running = False
 
         # Only if menu is visible
-        if menu.visible:
+        if menu.visible is True:
+            # Focus or not ?
             for menu_choice in menu.menu_choices:
                 rect = pygame.Rect((menu_choice.position[0]+menu.left, menu_choice.position[1]+menu.top), (menu_choice.width,menu_choice.height))
                 menu_choice.is_focus = rect.collidepoint(pygame.mouse.get_pos())
 
+            # If click on menu, select, block it and choose next scene
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if menu.selected is None:
                     for menu_choice in menu.menu_choices:
                         if menu_choice.is_focus is True:
                             menu.selected = menu_choice
-                            menu_choice.is_selected = True
+                            menu.selected.is_selected = True
                             scene_manager.set_next_scene(menu.selected.choice.next_scene)
-    
+            
     # Update
     scene_manager.update()
 
@@ -61,16 +63,27 @@ while running:
     clip_time, clip_duration = scene_manager.clip_manager.get_time_by_duration()
     scene_time, scene_duration = scene_manager.get_time_by_duration()
 
-    # Detect if the scene start to update menu
+    # Detect if the scene start to update menu and know how many choices
     if scene_manager.is_starting is True:
         menu.update_menu_choices_from_scene(scene_manager.current_scene)
+        if len(menu.menu_choices)==1:
+            only_one_choice = True
+            scene_manager.set_next_scene(menu.menu_choices[0].choice.next_scene)
+        else:
+            only_one_choice = False
 
-    # Show menu or not 
-    menu_to_show = False
-    if (scene_time > scene_manager.current_scene.menu_start_time and \
+    # Show / Hide menu
+    if (only_one_choice is False and \
+        scene_time > scene_manager.current_scene.menu_start_time and \
         scene_time < scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration):
         menu.show()
     else:
+        # If menu duration is over and not choice done, choose first
+        if (menu.selected is None and\
+            scene_time > scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration):
+            menu.selected = menu.menu_choices[0]
+            menu.selected.is_selected = True
+            scene_manager.set_next_scene(menu.selected.choice.next_scene)
         menu.hide()
     menu.update()
 
@@ -87,7 +100,7 @@ while running:
     print("------------------------------------------------------------")
     print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.3f} / {scene_duration:.3f}")
     print(f"Clip        : {scene_manager.clip_manager.current_clip.id.ljust(20)} \t {clip_time:.3f} / {clip_duration:.3f}")
-    print(f"Choices     : {", ".join([f"{choice.id}" for choice in scene_manager.current_scene.choices])}")
+    print(f"Choices     : {", ".join([f"{choice.id}" for choice in scene_manager.current_scene.choices])} - {only_one_choice}")
     print(f"Menu Choices: {" | ".join([f"{menu_choice.choice.description} (Focus:{menu_choice.is_focus},Selected:{menu_choice.is_selected})" for menu_choice in menu.menu_choices])}")
     print(f"Next Scene  : {scene_manager.next_scene.id}")
     print(f"Menu between {scene_manager.current_scene.menu_start_time:.3f} and "+
