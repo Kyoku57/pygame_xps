@@ -93,24 +93,28 @@ class Menu:
         self.banner = pygame.Rect(0, 0, self.width, self.height)
         self.progress_bar_color = (255, 255, 255)
         self.progress_bar_rect = pygame.Rect(0,0,0,4)
-        # Current choice
-        self.selected = None
 
     def update_menu_choices_from_scene(self, scene: Scene):
         # Init
         self.menu_choices = []
-        self.selected = None
 
         index = 0
         element_width = (self.width - ((len(scene.choices)+1)*self.margin)) / len(scene.choices)
         element_heigth = (self.height - 2*self.margin)
         for choice in scene.choices:
+            # Don't map the hidden choice
+            if choice.hidden is True:
+                continue
             index = index + 1
             # Calculate position
             position = (index*self.margin + (index-1)*element_width, self.margin)
             # add choice
             menu_choice = MenuChoice(self.font, choice, position, (element_width, element_heigth))
             self.menu_choices.append(menu_choice)
+
+    def is_choice_selected(self):
+        """Return is menu has a chosen element"""
+        return True in [choice.is_selected for choice in self.menu_choices]
 
     def show(self):
         """Init menu show animation"""
@@ -170,7 +174,7 @@ class Menu:
         # Choices rendering
         choice: Choice
         for choice in self.menu_choices:
-            self.surface.blit(choice.get_surface(self.selected is None), choice.position)
+            self.surface.blit(choice.get_surface(self.is_choice_selected() is False), choice.position)
         # Add progress bar
         pygame.draw.rect(self.surface, self.progress_bar_color, self.progress_bar_rect, 0, 2, 2, 2, 2)
 

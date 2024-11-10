@@ -2,10 +2,12 @@ import pygame
 from clip import Clip
 
 class Choice:
-    def __init__(self, id, description, next_scene):
+    def __init__(self, id, description, next_scene, hidden, summary):
         self.id = id
         self.description = description
+        self.summary = summary
         self.next_scene = next_scene
+        self.hidden = hidden
 
 
 class Scene:
@@ -19,9 +21,10 @@ class Scene:
         # Menu management
         self.menu_start_time = menu_start_time
         self.menu_duration = menu_duration
+        self.menu_end_time = menu_start_time + menu_duration
         # Choices management
         self.choices = []
-        self.default_choice = 0
+        self.default_choice = None
 
     def add_clip(self, clip_id):
         """Add a clip to the scene"""
@@ -29,19 +32,22 @@ class Scene:
         self.ordered_clips.append(clip)
         return self
 
-    def add_choice(self, choice_id, description, next_scene):
+    def add_choice(self, choice_id, description, next_scene, hidden=False, summary=""):
         """Add a choice to the scene"""
-        choice = Choice(choice_id, description, next_scene)
+        choice = Choice(choice_id, description, next_scene, hidden, summary)
         self.choices.append(choice)
+        if len(self.choices)==1:
+            self.default_choice = choice
         return self
     
-    def set_default_choice(self, user_index):
+    def set_default_choice(self, default_choice_id):
         """Set the default choice
-        the choice in scene object are set from 0 to N-1
-        but the user, when it configures, set the number from 1 to N
-        that why I soustract index from one unit
         """
-        self.default_choice = user_index-1
+        for choice in self.choices:
+            if choice.id == default_choice_id:
+                self.default_choice = choice
+        if self.default_choice is None:
+            raise Exception(f"In scene {self.id}, choice ID {default_choice_id} doesn't exist.")
         return self
 
     def duration_to_index(self, index):
@@ -55,8 +61,8 @@ class Scene:
             raise Exception(f"In scene {self.id}, Menu start({self.menu_start_time}) + Menu duration({self.menu_duration}) are superior to Scene duration({scene_duration})") 
         if self.menu_duration < 3:
             raise Exception(f"In scene {self.id}, too low value for menu_duration") 
-        return scene_duration   
-
+        return scene_duration
+    
 
 class SceneResources:
     def __init__(self):
@@ -78,7 +84,23 @@ class SceneResources:
         return self.scenes[scene_id]
     
     def check_coherence(self):
-        pass # need to check every scene / choice exists
+        """Test scene coherence
+            - Duration
+            - Choice existence
+            - Scene existence
+        """
+        print("Check coherence with ...")
+        for scene_id,scene in self.scenes.items():
+            scene.duration()
+        print(" ... durations: OK")
+
+        for scene_id,scene in self.scenes.items():
+            if len(scene.choices) == 0:
+                raise Exception(f"In scene {self.id}, there is no choice. You need at least one choice to define next scene.")
+            for choice in scene.choices:
+                self.get(choice.next_scene)
+        print(" ... scene in choice: OK")
+        print("EVERYTHING IS OK ! Good Game !")
 
 
 class SceneManager:
@@ -154,7 +176,6 @@ class SceneManager:
             surface = pygame.transform.scale(self.current_clip.get_surface(), (target_width, target_height))
 
         return surface
-        
 
     def get_time_by_duration(self):
         clip_time, clip_duration = self.current_clip.get_time_by_duration()

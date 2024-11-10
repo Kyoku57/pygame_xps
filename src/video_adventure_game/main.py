@@ -1,6 +1,6 @@
 import pygame
 from menu import Menu
-from configuration_gabby import scene_resources, screen_size, debug_mode, full_screen
+from configuration_test import scene_resources, screen_size, debug_mode, full_screen
 from history import History
 from scene import SceneManager
 
@@ -53,7 +53,7 @@ while running:
 
             # If click on menu, select, block it and choose next scene
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if menu.selected is None:
+                if menu.is_choice_selected() is False:
                     for menu_choice in menu.menu_choices:
                         if menu_choice.is_focus is True:
                             menu.selected = menu_choice
@@ -68,26 +68,31 @@ while running:
 
     # Detect if the scene start in order to update menu and know how many choices available
     if scene_manager.is_starting is True:
+        default_scene_choice = None
         menu.update_menu_choices_from_scene(scene_manager.current_scene)
-        if len(menu.menu_choices)==1:
-            only_one_choice = True
-            scene_manager.set_next_scene(menu.menu_choices[0].choice.next_scene)
-            history.add_event(menu.menu_choices[0].choice)
-        else:
-            only_one_choice = False
 
     # Update Menu and default first choice
-    if (only_one_choice is False and \
+    if (len(menu.menu_choices)>1 and \
         scene_time > scene_manager.current_scene.menu_start_time and \
-        scene_time < scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration):
+        scene_time < scene_manager.current_scene.menu_end_time):
+
         menu.show()
     else:
-        # If menu duration is over and not choice done, choose first
-        if (menu.selected is None and\
-            scene_time > scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration):
-            menu.selected = menu.menu_choices[scene_manager.current_scene.default_choice]
-            menu.selected.is_selected = True
-            scene_manager.set_next_scene(menu.selected.choice.next_scene)
+        # If menu duration is over and not choice done, choose default
+        if (default_scene_choice is None and\
+            menu.is_choice_selected() is False and\
+            scene_time > scene_manager.current_scene.menu_end_time):
+
+            # default choice
+            default_scene_choice = scene_manager.current_scene.default_choice
+            # find equivalent from menu if exists (it can be an hidden choice)
+            for menu_choice in menu.menu_choices:
+                if default_scene_choice == menu_choice:
+                    selected_menu_choice = menu.menu_choices[scene_manager.current_scene.default_choice]
+                    selected_menu_choice.is_selected = True
+            scene_manager.set_next_scene(default_scene_choice.next_scene)
+            history.add_event(default_scene_choice)
+
         menu.hide()
     menu.update()
     menu.update_progress_bar(scene_time-scene_manager.current_scene.menu_start_time, 
@@ -96,17 +101,20 @@ while running:
     # debug scene_manager / clip 
     if debug_mode is True:
         debug_buffer = []
-        debug_buffer.append("------------------------------------------------------------")
-        debug_buffer.append(f"Tick value  : {TICK_VALUE}")
-        debug_buffer.append(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.2f} / {scene_duration:.2f}")
-        debug_buffer.append(f"Clip        : {scene_manager.current_clip.id.ljust(20)} \t {clip_time:.2f} / {clip_duration:.2f}")
-        debug_buffer.append(f"Choices     : {" | ".join([f"{choice.id}".ljust(20) for choice in scene_manager.current_scene.choices])} {" -> only choice !" if only_one_choice else ""}")
-        debug_buffer.append(f"Menu Flags  : {" | ".join([f"Focus: {"X" if menu_choice.is_focus else "-"}, Selected:{"X" if menu_choice.is_selected else "-"}".ljust(20) for menu_choice in menu.menu_choices])}")
-        debug_buffer.append(f"Menu        : between {scene_manager.current_scene.menu_start_time:.2f} and "+
+        debug_buffer.append("--------------------------------------------------------------------------------------------------------")
+        debug_buffer.append(f"Tick value        : {TICK_VALUE}")
+        debug_buffer.append(f"Clip              : {scene_manager.current_clip.id.ljust(20)} \t {clip_time:.2f} / {clip_duration:.2f}")
+        debug_buffer.append(f"Scene             : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.2f} / {scene_duration:.2f}")
+        debug_buffer.append(f"Next Scene        : {scene_manager.next_scene.id}")
+        debug_buffer.append(f"Choices           : {" | ".join([f"{choice.id}{"(H)" if choice.hidden is True else ""}".ljust(20) for choice in scene_manager.current_scene.choices])}")
+        debug_buffer.append(f"Menu choice       : {" | ".join([f"{menu_choice.choice.id}".ljust(20) for menu_choice in menu.menu_choices])}")
+        debug_buffer.append(f"Menu Flags        : {" | ".join([f"Focus: {"X" if menu_choice.is_focus else "-"}, Selected:{"X" if menu_choice.is_selected else "-"}".ljust(20) for menu_choice in menu.menu_choices])}")
+        debug_buffer.append(f"Default choice    : {scene_manager.current_scene.default_choice.id}")
+        debug_buffer.append(f"Menu is selected  : {menu.is_choice_selected()}")
+        debug_buffer.append(f"Menu              : between {scene_manager.current_scene.menu_start_time:.2f} and "+
             f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.2f} of the scene " +
             f"-> {"Visible" if menu.visible else "Hidden"}")
-        debug_buffer.append(f"Next Scene  : {scene_manager.next_scene.id}")
-        debug_buffer.append(f"History     : {history}")
+        debug_buffer.append(f"History           : {history}")
 
     # Update scene/clip and if it is the end of the clip
     scene_manager.update_and_return_isfinished()
