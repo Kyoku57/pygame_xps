@@ -116,7 +116,6 @@ class SceneManager:
 
         return self.is_clip_finished
 
-
     def process_next_clip(self):
         """Rendering is already done in the previous "tick" so get next_scene
         """

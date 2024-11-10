@@ -4,6 +4,7 @@ from scene import Scene, SceneResources
 
 # Screen size
 screen_size = (1000,500)
+full_screen = False
 
 # debug mode
 debug_mode = True

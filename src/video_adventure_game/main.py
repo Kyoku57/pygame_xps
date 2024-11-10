@@ -1,37 +1,38 @@
 import pygame
 from menu import Menu
-from configuration_test import scene_resources, screen_size, debug_mode
+from configuration_test import scene_resources, screen_size, debug_mode, full_screen
+from history import History
 from scene import SceneManager
 
 # Global variables
-BLACK=(0,0,0)
-
-class History(list):
-    """Define history of choice"""
-    pass
+BLACK = (0,0,0)
 
 # Initialize Pygame
 pygame.init()
 
 # Prepare SCREEN
-screen=pygame.display.set_mode(screen_size, 0, 32)
-#screen=pygame.display.set_mode(screen_size, pygame.RESIZABLE) # Forget it :-)
-#screen=pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+if full_screen is False:
+    screen = pygame.display.set_mode(screen_size, 0, 32)
+    #screen=pygame.display.set_mode(screen_size, pygame.RESIZABLE) # Forget it :-)
+else:
+    screen=pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 pygame.display.set_caption("Clip/Scene test")
-screen_size=(screen.get_rect().width, screen.get_rect().height)
+screen_size = (screen.get_rect().width, screen.get_rect().height)
+
+# Init History
+history = History()
 
 # Init Current scene 
 scene_manager = SceneManager(scene_resources,scene_resources.first_id)
 
 # init menu
-menu=Menu(screen_size)
+menu = Menu(screen_size)
 
 # Run the Pygame loop to keep the window open
 running = True
+TICK_VALUE = 25  # 25 tick per second // 0.04 secondes per frame
 clock = pygame.time.Clock()
-TICK_VALUE = 25
 while running:
-    # 25 tick per second // 0.04 secondes per frame
     clock.tick(TICK_VALUE)
 
     # check for events ---------------------------------------------------------------------------
@@ -58,10 +59,8 @@ while running:
                             menu.selected = menu_choice
                             menu.selected.is_selected = True
                             scene_manager.set_next_scene(menu.selected.choice.next_scene)
+                            history.add_event(menu.selected.choice)
     # end events --------------------------------------------------------------------------------
-
-    # Update scene/clip and go to the end of the clip
-    scene_manager.update_and_return_isfinished()
 
     # Get time reference of the scene and current clip
     clip_time, clip_duration = scene_manager.current_clip.get_time_by_duration()
@@ -73,6 +72,7 @@ while running:
         if len(menu.menu_choices)==1:
             only_one_choice = True
             scene_manager.set_next_scene(menu.menu_choices[0].choice.next_scene)
+            history.add_event(menu.menu_choices[0].choice)
         else:
             only_one_choice = False
 
@@ -93,29 +93,38 @@ while running:
     menu.update_progress_bar(scene_time-scene_manager.current_scene.menu_start_time, 
                              scene_manager.current_scene.menu_duration)
 
+    # debug scene_manager / clip 
+    if debug_mode is True:
+        debug_buffer = []
+        debug_buffer.append("------------------------------------------------------------")
+        debug_buffer.append(f"Tick value  : {TICK_VALUE}")
+        debug_buffer.append(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.2f} / {scene_duration:.2f}")
+        debug_buffer.append(f"Clip        : {scene_manager.current_clip.id.ljust(20)} \t {clip_time:.2f} / {clip_duration:.2f}")
+        debug_buffer.append(f"Choices     : {" | ".join([f"{choice.id}".ljust(20) for choice in scene_manager.current_scene.choices])} {" -> only choice !" if only_one_choice else ""}")
+        debug_buffer.append(f"Menu Flags  : {" | ".join([f"Focus: {"X" if menu_choice.is_focus else "-"}, Selected:{"X" if menu_choice.is_selected else "-"}".ljust(20) for menu_choice in menu.menu_choices])}")
+        debug_buffer.append(f"Menu        : between {scene_manager.current_scene.menu_start_time:.2f} and "+
+            f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.2f} of the scene " +
+            f"-> {"Visible" if menu.visible else "Hidden"}")
+        debug_buffer.append(f"Next Scene  : {scene_manager.next_scene.id}")
+        debug_buffer.append(f"History     : {history}")
+
+    # Update scene/clip and if it is the end of the clip
+    scene_manager.update_and_return_isfinished()
+
     # Draw the surface onto the window
     screen.fill(BLACK)
     scene_surface = scene_manager.get_surface(screen_size)
     screen.blit(scene_surface, scene_surface.get_rect(center=(screen_size[0]/2, screen_size[1]/2)))
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
-    # if the clip was finished define next clip
+    # debug Progress bar
+    if debug_mode:
+        pygame.draw.rect(screen, pygame.Color(255,255,100), pygame.Rect(0,0,screen_size[0]*scene_time/scene_duration,2))
+        print("\n".join(debug_buffer))
+
+    # if the clip was finished define launch next clip (with reset)
     if scene_manager.is_clip_finished is True:
         scene_manager.process_next_clip()
-
-    # debug elements
-    if debug_mode is True:
-        print("------------------------------------------------------------")
-        print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.2f} / {scene_duration:.2f}")
-        print(f"Clip        : {scene_manager.current_clip.id.ljust(20)} \t {clip_time:.2f} / {clip_duration:.2f}")
-        print(f"Choices     : {", ".join([f"{choice.id}" for choice in scene_manager.current_scene.choices])} - Only one : {only_one_choice}")
-        print(f"Menu Choices: {" | ".join([f"{menu_choice.choice.description} (Focus:{menu_choice.is_focus},Selected:{menu_choice.is_selected})" for menu_choice in menu.menu_choices])}")
-        print(f"Next Scene  : {scene_manager.next_scene.id}")
-        print(f"Menu between {scene_manager.current_scene.menu_start_time:.2f} and "+
-            f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.2f} " +
-            f"-> {"Visible" if menu.visible else "Hidden"}")
-        # debug Progress bar
-        pygame.draw.rect(screen, pygame.Color(255,255,100), pygame.Rect(0,0,screen_size[0]*scene_time/scene_duration,2))
 
     # render
     pygame.display.flip()

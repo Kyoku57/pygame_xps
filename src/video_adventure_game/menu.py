@@ -68,11 +68,14 @@ class Menu:
             - should be created once
         """
         # dimension
-        dimension=(screen_size[0]-100,60)
+        h = screen_size[1] / 10
+        self.animation_increment = h / 25
+        dimension=(screen_size[0]-100,h)
         init_position=((screen_size[0]-dimension[0])/2, screen_size[1])
-
         self.width,self.height = dimension
         self.margin = 10
+        self.font_size = round(h/2)
+        self.font=pygame.font.SysFont(None, self.font_size)
         # position
         self.left,self.top = init_position
         self.init_left,self.init_top = init_position
@@ -84,8 +87,6 @@ class Menu:
         self.menu_choices = []
         # Font initialisation
         t0 = time.time()
-        self.font_size = 24
-        self.font=pygame.font.SysFont(None, self.font_size)
         print('time needed for Font creation :', time.time()-t0)
         # surfaces
         self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
@@ -134,12 +135,12 @@ class Menu:
         limit_high = self.init_top-self.height-10
         limit_low = self.init_top
         if self.animation_show is True:
-            if self.top-2 < limit_high:
+            if self.top-self.animation_increment < limit_high:
                 self.top = limit_high
                 self.animation_show = False
                 self.visible = True
             else:
-                self.top -= 2
+                self.top -= self.animation_increment
         
         if self.animation_hide is True:
             if self.top >= limit_low:
@@ -147,7 +148,7 @@ class Menu:
                 self.animation_hide = False
                 self.visible = False
             else:
-                self.top += 2
+                self.top += self.animation_increment
 
     def update_progress_bar(self, time, duration):
         """update time for menu progress bar

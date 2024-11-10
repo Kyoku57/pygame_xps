@@ -4,6 +4,7 @@ from scene import Scene, SceneResources
 
 # Screen size
 screen_size = (830,500)
+full_screen = False
 
 # debug mode
 debug_mode = True
@@ -26,12 +27,28 @@ scene_resources.add(Scene(clips, "REVEIL_DE_GAB", 1, 5)
     .add_clip("RAPH_ENTRE")
     .add_clip("GAB_DORT_ZOOM")
     .add_clip("RAPH_ENTRE")
+    .add_choice("BOUCLE2A", "Boucle 2", "REVEIL_DE_GAB2")
+    .add_choice("BOUCLE3A", "Boucle 3", "REVEIL_DE_GAB3")
+    .add_choice("BOUCLE2B", "Boucle 2", "REVEIL_DE_GAB2")
+    .add_choice("BOUCLE3B", "Boucle 3", "REVEIL_DE_GAB3")
+    .set_default_choice(1))
+
+scene_resources.add(Scene(clips, "REVEIL_DE_GAB2", 1, 5)
+    .add_clip("GAB_DORT")
+    .add_clip("RAPH_ENTRE")
     .add_clip("GAB_DORT_ZOOM")
     .add_clip("RAPH_ENTRE")
-    .add_choice("BOUCLE1", "Boucle infinie", "REVEIL_DE_GAB")
-    .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB")
-    .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB")
-    .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB")
+    .add_choice("BOUCLE1C", "Boucle 1", "REVEIL_DE_GAB")
+    .add_choice("BOUCLE2C", "Boucle 2", "REVEIL_DE_GAB2")
+    .add_choice("BOUCLE3C", "Boucle 3", "REVEIL_DE_GAB3")
+    .set_default_choice(1))
+
+scene_resources.add(Scene(clips, "REVEIL_DE_GAB3", 1, 5)
+    .add_clip("GAB_DORT")
+    .add_clip("RAPH_ENTRE")
+    .add_clip("GAB_DORT_ZOOM")
+    .add_clip("RAPH_ENTRE")
+    .add_choice("BOUCLE1", "Boucle 1", "REVEIL_DE_GAB")
     .set_default_choice(1))
 
 
