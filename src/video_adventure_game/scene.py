@@ -96,7 +96,7 @@ class SceneResources:
 
         for scene_id,scene in self.scenes.items():
             if len(scene.choices) == 0:
-                raise Exception(f"In scene {self.id}, there is no choice. You need at least one choice to define next scene.")
+                raise Exception(f"In scene {scene_id}, there is no choice. You need at least one choice to define next scene.")
             for choice in scene.choices:
                 self.get(choice.next_scene)
         print(" ... scene in choice: OK")

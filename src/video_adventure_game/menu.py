@@ -97,14 +97,11 @@ class Menu:
     def update_menu_choices_from_scene(self, scene: Scene):
         # Init
         self.menu_choices = []
-
+        filtered_scene_choices = [choice for choice in scene.choices if choice.hidden is False]
         index = 0
-        element_width = (self.width - ((len(scene.choices)+1)*self.margin)) / len(scene.choices)
+        element_width = (self.width - ((len(filtered_scene_choices)+1)*self.margin)) / len(filtered_scene_choices)
         element_heigth = (self.height - 2*self.margin)
-        for choice in scene.choices:
-            # Don't map the hidden choice
-            if choice.hidden is True:
-                continue
+        for choice in filtered_scene_choices:
             index = index + 1
             # Calculate position
             position = (index*self.margin + (index-1)*element_width, self.margin)

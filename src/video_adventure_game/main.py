@@ -114,7 +114,7 @@ while running:
         debug_buffer.append(f"Menu              : between {scene_manager.current_scene.menu_start_time:.2f} and "+
             f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.2f} of the scene " +
             f"-> {"Visible" if menu.visible else "Hidden"}")
-        debug_buffer.append(f"History           : {history}")
+        debug_buffer.append(f"History (last 5)  : {history.last(5)}")
 
     # Update scene/clip and if it is the end of the clip
     scene_manager.update_and_return_isfinished()

@@ -16,3 +16,6 @@ class History:
 
     def __str__(self):
         return ",".join([event.choice.id for event in self.event_choices])
+    
+    def last(self, nb):
+        return ",".join([event.choice.id for event in self.event_choices][-nb:])
