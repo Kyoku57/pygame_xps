@@ -1,6 +1,6 @@
 import pygame
 from menu import Menu
-from configuration_test import scene_resources, screen_size
+from configuration_test import scene_resources, screen_size, debug_mode
 from scene import SceneManager
 
 # Global variables
@@ -29,10 +29,10 @@ menu=Menu(screen_size)
 # Run the Pygame loop to keep the window open
 running = True
 clock = pygame.time.Clock()
-tick_value = 25
+TICK_VALUE = 25
 while running:
     # 25 tick per second // 0.04 secondes per frame
-    clock.tick(tick_value)
+    clock.tick(TICK_VALUE)
 
     # check for events ---------------------------------------------------------------------------
     for event in pygame.event.get():
@@ -41,10 +41,6 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_w:
-            tick_value = tick_value / 2
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_x:
-            tick_value = tick_value * 2
 
         # Only if menu is visible
         if menu.visible is True:
@@ -64,14 +60,14 @@ while running:
                             scene_manager.set_next_scene(menu.selected.choice.next_scene)
     # end events --------------------------------------------------------------------------------
 
-    # Update Scene / Clips
-    scene_manager.update()
+    # Update scene/clip and go to the end of the clip
+    scene_manager.update_and_return_isfinished()
 
     # Get time reference of the scene and current clip
     clip_time, clip_duration = scene_manager.current_clip.get_time_by_duration()
     scene_time, scene_duration = scene_manager.get_time_by_duration()
 
-    # Detect if the scene start to update menu and know how many choices
+    # Detect if the scene start in order to update menu and know how many choices available
     if scene_manager.is_starting is True:
         menu.update_menu_choices_from_scene(scene_manager.current_scene)
         if len(menu.menu_choices)==1:
@@ -103,18 +99,23 @@ while running:
     screen.blit(scene_surface, scene_surface.get_rect(center=(screen_size[0]/2, screen_size[1]/2)))
     screen.blit(menu.get_surface(), (menu.left, menu.top))
 
+    # if the clip was finished define next clip
+    if scene_manager.is_clip_finished is True:
+        scene_manager.process_next_clip()
+
     # debug elements
-    print("------------------------------------------------------------")
-    print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.2f} / {scene_duration:.2f}")
-    print(f"Clip        : {scene_manager.current_clip.id.ljust(20)} \t {clip_time:.2f} / {clip_duration:.2f}")
-    print(f"Choices     : {", ".join([f"{choice.id}" for choice in scene_manager.current_scene.choices])} - Only one : {only_one_choice}")
-    print(f"Menu Choices: {" | ".join([f"{menu_choice.choice.description} (Focus:{menu_choice.is_focus},Selected:{menu_choice.is_selected})" for menu_choice in menu.menu_choices])}")
-    print(f"Next Scene  : {scene_manager.next_scene.id}")
-    print(f"Menu between {scene_manager.current_scene.menu_start_time:.2f} and "+
-          f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.2f} " +
-          f"-> {"Visible" if menu.visible else "Hidden"}")
-    # debug Progress bar
-    pygame.draw.rect(screen, pygame.Color(255,255,100), pygame.Rect(0,0,screen_size[0]*scene_time/scene_duration,2))
+    if debug_mode is True:
+        print("------------------------------------------------------------")
+        print(f"Scene       : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.2f} / {scene_duration:.2f}")
+        print(f"Clip        : {scene_manager.current_clip.id.ljust(20)} \t {clip_time:.2f} / {clip_duration:.2f}")
+        print(f"Choices     : {", ".join([f"{choice.id}" for choice in scene_manager.current_scene.choices])} - Only one : {only_one_choice}")
+        print(f"Menu Choices: {" | ".join([f"{menu_choice.choice.description} (Focus:{menu_choice.is_focus},Selected:{menu_choice.is_selected})" for menu_choice in menu.menu_choices])}")
+        print(f"Next Scene  : {scene_manager.next_scene.id}")
+        print(f"Menu between {scene_manager.current_scene.menu_start_time:.2f} and "+
+            f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.2f} " +
+            f"-> {"Visible" if menu.visible else "Hidden"}")
+        # debug Progress bar
+        pygame.draw.rect(screen, pygame.Color(255,255,100), pygame.Rect(0,0,screen_size[0]*scene_time/scene_duration,2))
 
     # render
     pygame.display.flip()

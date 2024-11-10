@@ -97,34 +97,52 @@ class SceneManager:
         # Status
         self.is_starting = True
         self.__is_never_updated = True
+        self.is_clip_finished = False
 
-    def update(self):
+    def update_and_return_isfinished(self):
         # Tricky start detection for the very first time of update
         if self.__is_never_updated is True:
             self.__is_never_updated = False
         else:
             self.is_starting = False
 
-        # Update clip and detect it to go next clip or next scene
+        # Launch audio is needed
+        if self.current_clip.time == 0:
+            self.current_clip.play_audio()
+
+        # Update clip and detect end. Reset will be done in the next "tick"
         if self.current_clip.update_and_return_isfinished():
-            # next clip if clip is finished
-            self.clip_index += 1
-            # is last clip of the scene ?
-            if self.clip_index >= len(self.current_scene.ordered_clips):
-                self.current_scene = self.next_scene
-                self.clip_index = 0
-                self.is_starting = True
-            # Next clip
-            next_clip = self.current_scene.ordered_clips[self.clip_index]
-            self.current_clip = next_clip
-            
+            self.is_clip_finished = True
+
+        return self.is_clip_finished
+
+
+    def process_next_clip(self):
+        """Rendering is already done in the previous "tick" so get next_scene
+        """
+        # reset flag
+        self.is_clip_finished = False
+        # next clip of the scene or next scene if finished
+        self.clip_index += 1
+        if self.clip_index >= len(self.current_scene.ordered_clips):
+            self.current_scene = self.next_scene
+            self.clip_index = 0
+            self.is_starting = True
+        # next clip
+        next_clip = self.current_scene.ordered_clips[self.clip_index]
+        self.current_clip = next_clip
+        self.current_clip.reset()
+
     def set_next_scene(self, scene_id):
         self.next_scene = self.scene_resources.get(scene_id)
 
     def get_surface(self, screen_size):
-        """Export updated Surface depends on screen size for scale"""
+        """Export updated Surface depends on screen size for scale
+           and prepare next clip after rendering
+        """
+        surface = None
         if (self.current_clip.get_surface().get_size() == screen_size):
-            return self.current_clip.get_surface()
+            surface = self.current_clip.get_surface()
         else:
             ratio_source = self.current_clip.get_surface().get_size()[0]/self.current_clip.get_surface().get_size()[1]
             ratio_screen = screen_size[0]/screen_size[1]
@@ -134,7 +152,10 @@ class SceneManager:
             else:
                 target_height = screen_size[1]
                 target_width = screen_size[1] * ratio_source
-            return pygame.transform.scale(self.current_clip.get_surface(), (target_width, target_height))
+            surface = pygame.transform.scale(self.current_clip.get_surface(), (target_width, target_height))
+
+        return surface
+        
 
     def get_time_by_duration(self):
         clip_time, clip_duration = self.current_clip.get_time_by_duration()

@@ -5,6 +5,9 @@ from scene import Scene, SceneResources
 # Screen size
 screen_size=(800,450)
 
+# debug mode
+debug_mode = True
+
 # assets and cache
 assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
 cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
@@ -30,7 +33,9 @@ clips.add("GAB_CHOISI_COMPOTE", "PXL_20241102_125515349.TSR.mp4")
 clips.add("GAB_MANGE_COMPOTE", "PXL_20241102_125530418.TSR.mp4")
 clips.add("GAB_FIN_COMPOTE", "PXL_20241102_125604652.TSR.mp4")
 clips.add("GAB_CHOISI_BANANE", "PXL_20241102_125630244.TSR.mp4")
-clips.add("GAB_PREND_BANANE", "PXL_20241102_125651593.TSR.mp4")
+clips.add("GAB_PREND
+# debug mode
+debug_mode = True_BANANE", "PXL_20241102_125651593.TSR.mp4")
 clips.add("GAB_MANGE_BANANE", "PXL_20241102_125702311.TSR.mp4")
 clips.add("GAB_FINI_BANANE", "PXL_20241102_125717425.TSR.mp4")
 clips.add("GAB_MONTE_ESCALIER", "PXL_20241102_125734039.TSR.mp4")

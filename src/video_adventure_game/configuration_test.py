@@ -3,7 +3,10 @@ from clip import ClipResources
 from scene import Scene, SceneResources
 
 # Screen size
-screen_size=(830,500)
+screen_size = (830,500)
+
+# debug mode
+debug_mode = True
 
 # assets and cache
 assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")

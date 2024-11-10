@@ -29,7 +29,9 @@ class ClipResources:
         return self.clips[clip_id]
 
 class Clip:
-    """Clip that represent a subset of a video"""
+    """Clip that represent a subset of a video
+       Audio are put in cache to be played quickly
+    """
     def __init__(self, id, cache_path, clip, start=0, end=0):
         """Init clip object"""
         self.id = id
@@ -38,7 +40,7 @@ class Clip:
         # video clip
         self.clip = clip
         # Manage end time
-        self.frame_duration = 1/25
+        self.FRAME_DURATION = 1/25
         self.start = start
         source_duration = self.clip.duration
         if end == 0:
@@ -66,18 +68,13 @@ class Clip:
         self.time = 0
        
     def update_and_return_isfinished(self):
-        """Obtain the right frame and audio trigger
+        """Obtain the right frame
         """
         # frame to show
         self.frame = self.clip.get_frame(t=self.time)
-        # audio to reset
-        if self.time == 0:
-            self.audio.play()
-        # Increment and detect end of the clip
-        self.time += self.frame_duration
-        is_finished = self.time > (self.duration+(self.frame_duration/2)) # Dirty hack to bypass float approx
-        if is_finished is True:
-            self.reset()
+        # Increment and detect end of the clip if time is over duration time next time
+        self.time += self.FRAME_DURATION
+        is_finished = round(self.time*1000) > round(self.duration*1000) # Used to bypass float problem
         return is_finished
     
     def cache_audio(self):
@@ -90,6 +87,9 @@ class Clip:
         # cache audio object
         if self.audio is None:
             self.audio = pygame.mixer.Sound(self.audio_filename)
+
+    def play_audio(self):
+        self.audio.play()
 
     def get_progress(self):
         return (self.time)*100/(self.duration)
