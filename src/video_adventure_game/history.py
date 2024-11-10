@@ -14,6 +14,9 @@ class History:
     def add_event(self, choice):
         self.event_choices.append(Event(choice))
 
+    def events_by_id(self, choice_id):
+        return [event for event in self.event_choices if event.choice.id == choice_id]
+
     def __str__(self):
         return ",".join([event.choice.id for event in self.event_choices])
     
