@@ -1,6 +1,6 @@
 import pygame
 from menu import Menu
-from configuration_gabby import scene_resources, screen_size
+from configuration_test import scene_resources, screen_size
 from scene import SceneManager
 
 # Global variables
@@ -30,8 +30,8 @@ menu=Menu(screen_size)
 running=True
 clock=pygame.time.Clock()
 while running:
-    # 25 tick per second
-    clock.tick(25)
+    # 25 tick per second // 0.04 secondes per frame
+    clock.tick(5)
 
     # check for events ---------------------------------------------------------------------------
     for event in pygame.event.get():
@@ -107,7 +107,7 @@ while running:
     print(f"Next Scene  : {scene_manager.next_scene.id}")
     print(f"Menu between {scene_manager.current_scene.menu_start_time:.2f} and "+
           f"{scene_manager.current_scene.menu_start_time + scene_manager.current_scene.menu_duration:.2f} " +
-          f"-> {"Visible" if menu.visible else "Hidden"}")
+          f"-> {"Visible" if menu.visible else "Hidclip_timeden"}")
     # debug Progress bar
     pygame.draw.rect(screen, pygame.Color(255,255,100), pygame.Rect(0,0,screen_size[0]*scene_time/scene_duration,2))
 
