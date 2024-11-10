@@ -29,7 +29,8 @@ scene_resources.add(Scene(clips, "SCENE_1", 1, 5)
     .add_clip("CLIP_2")
     .add_choice("CHOIX_2", "Go scene 2", "SCENE_2")
     .add_choice("CHOIX_3", "Go scene 3", "SCENE_3")
-    .add_choice("CHOIX_2_AGAIN", "Go scene 2 (bis)", "SCENE_2", True)
+    .add_choice("CHOIX_2_AGAIN", "Go scene 2 (bis)", "SCENE_2", 
+                """history.event_has_choice_id("CHOIX_0")""")
     .add_choice("CHOIX_4", "Go scene 4", "SCENE_4")
     .set_default_choice("CHOIX_2_AGAIN"))
 

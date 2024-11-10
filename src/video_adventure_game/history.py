@@ -16,6 +16,9 @@ class History:
 
     def events_by_id(self, choice_id):
         return [event for event in self.event_choices if event.choice.id == choice_id]
+    
+    def event_has_choice_id(self, choice_id):
+        return len(self.events_by_id(choice_id))>0
 
     def __str__(self):
         return ",".join([event.choice.id for event in self.event_choices])

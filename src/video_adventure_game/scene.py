@@ -2,12 +2,12 @@ import pygame
 from clip import Clip
 
 class Choice:
-    def __init__(self, id, description, next_scene, hidden, summary):
+    def __init__(self, id, description, next_scene, condition, summary):
         self.id = id
         self.description = description
         self.summary = summary
         self.next_scene = next_scene
-        self.hidden = hidden
+        self.condition = condition
 
 
 class Scene:
@@ -32,9 +32,9 @@ class Scene:
         self.ordered_clips.append(clip)
         return self
 
-    def add_choice(self, choice_id, description, next_scene, hidden=False, summary=""):
+    def add_choice(self, choice_id, description, next_scene, condition="True", summary=""):
         """Add a choice to the scene"""
-        choice = Choice(choice_id, description, next_scene, hidden, summary)
+        choice = Choice(choice_id, description, next_scene, condition, summary)
         self.choices.append(choice)
         if len(self.choices)==1:
             self.default_choice = choice

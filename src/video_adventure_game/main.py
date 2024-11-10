@@ -1,6 +1,6 @@
 import pygame
 from menu import Menu
-from configuration_gabby import scene_resources, screen_size, debug_mode, full_screen
+from configuration_test import scene_resources, screen_size, debug_mode, full_screen
 from history import History
 from scene import SceneManager
 
@@ -69,7 +69,7 @@ while running:
     # Detect if the scene start in order to update menu and know how many choices available
     if scene_manager.is_starting is True:
         default_scene_choice = None
-        menu.update_menu_choices_from_scene(scene_manager.current_scene)
+        menu.update_menu_choices_from_scene(scene_manager.current_scene, history)
 
     # Update Menu and default first choice
     if (len(menu.menu_choices)>1 and \
@@ -106,7 +106,7 @@ while running:
         debug_buffer.append(f"Clip              : {scene_manager.current_clip.id.ljust(20)} {clip_time:.2f} / {clip_duration:.2f}")
         debug_buffer.append(f"Scene             : {scene_manager.current_scene.id.ljust(20)} {scene_time:.2f} / {scene_duration:.2f}")
         debug_buffer.append(f"Next Scene        : {scene_manager.next_scene.id}")
-        debug_buffer.append(f"Choices           : {" | ".join([f"{choice.id}{"(H)" if choice.hidden is True else ""}".ljust(20) for choice in scene_manager.current_scene.choices])}")
+        debug_buffer.append(f"Choices           : {" | ".join([f"{choice.id}{"(H)" if choice.condition is False else ""}".ljust(20) for choice in scene_manager.current_scene.choices])}")
         debug_buffer.append(f"Menu choice       : {" | ".join([f"{menu_choice.choice.id}".ljust(20) for menu_choice in menu.menu_choices])}")
         debug_buffer.append(f"Menu Flags        : {" | ".join([f"Focus: {"X" if menu_choice.is_focus else "-"}, Selected:{"X" if menu_choice.is_selected else "-"}".ljust(20) for menu_choice in menu.menu_choices])}")
         debug_buffer.append(f"Default choice    : {scene_manager.current_scene.default_choice.id}")

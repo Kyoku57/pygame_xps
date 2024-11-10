@@ -94,10 +94,10 @@ class Menu:
         self.progress_bar_color = (255, 255, 255)
         self.progress_bar_rect = pygame.Rect(0,0,0,4)
 
-    def update_menu_choices_from_scene(self, scene: Scene):
+    def update_menu_choices_from_scene(self, scene: Scene, history):
         # Init
         self.menu_choices = []
-        filtered_scene_choices = [choice for choice in scene.choices if choice.hidden is False]
+        filtered_scene_choices = [choice for choice in scene.choices if eval(choice.condition) is True]
         index = 0
         element_width = (self.width - ((len(filtered_scene_choices)+1)*self.margin)) / len(filtered_scene_choices)
         element_heigth = (self.height - 2*self.margin)
