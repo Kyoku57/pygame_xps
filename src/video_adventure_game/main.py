@@ -1,6 +1,6 @@
 import pygame
 from menu import Menu
-from configuration_test import scene_resources, screen_size, debug_mode, full_screen
+from configuration_gabby import scene_resources, screen_size, debug_mode, full_screen
 from history import History
 from scene import SceneManager
 
