@@ -50,15 +50,4 @@ scene_resources.add(Scene(clips,"SCENE_3", 3, 15)
 
 
 # ------------------ CHECK -------------------------------
-
-print("Check coherence with ...")
-for scene_id,scene in scene_resources.scenes.items():
-    scene.duration()
-print(" ... durations: OK")
-
-for scene_id,scene in scene_resources.scenes.items():
-    for choice in scene.choices:
-        scene_resources.get(choice.next_scene)
-print(" ... scene in choice: OK")
-
-print("EVERYTHING IS OK ! Good Game !")
+scene_resources.check_coherence()
