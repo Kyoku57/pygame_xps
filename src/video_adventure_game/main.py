@@ -87,8 +87,8 @@ while running:
             default_scene_choice = scene_manager.current_scene.default_choice
             # find equivalent from menu if exists (it can be an hidden choice)
             for menu_choice in menu.menu_choices:
-                if default_scene_choice == menu_choice:
-                    selected_menu_choice = menu.menu_choices[scene_manager.current_scene.default_choice]
+                if default_scene_choice == menu_choice.choice:
+                    selected_menu_choice = menu_choice
                     selected_menu_choice.is_selected = True
             scene_manager.set_next_scene(default_scene_choice.next_scene)
             history.add_event(default_scene_choice)
@@ -103,8 +103,8 @@ while running:
         debug_buffer = []
         debug_buffer.append("--------------------------------------------------------------------------------------------------------")
         debug_buffer.append(f"Tick value        : {TICK_VALUE}")
-        debug_buffer.append(f"Clip              : {scene_manager.current_clip.id.ljust(20)} \t {clip_time:.2f} / {clip_duration:.2f}")
-        debug_buffer.append(f"Scene             : {scene_manager.current_scene.id.ljust(20)} \t {scene_time:.2f} / {scene_duration:.2f}")
+        debug_buffer.append(f"Clip              : {scene_manager.current_clip.id.ljust(20)} {clip_time:.2f} / {clip_duration:.2f}")
+        debug_buffer.append(f"Scene             : {scene_manager.current_scene.id.ljust(20)} {scene_time:.2f} / {scene_duration:.2f}")
         debug_buffer.append(f"Next Scene        : {scene_manager.next_scene.id}")
         debug_buffer.append(f"Choices           : {" | ".join([f"{choice.id}{"(H)" if choice.hidden is True else ""}".ljust(20) for choice in scene_manager.current_scene.choices])}")
         debug_buffer.append(f"Menu choice       : {" | ".join([f"{menu_choice.choice.id}".ljust(20) for menu_choice in menu.menu_choices])}")
