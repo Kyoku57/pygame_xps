@@ -9,8 +9,8 @@ screen_size = (830,500)
 debug_mode = True
 
 # assets and cache
-assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
-cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
+assets_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
+cache_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
 
 # Clip inventory
 clips = ClipResources(assets_dir,cache_dir)
@@ -28,21 +28,11 @@ scene_resources.add(Scene(clips, "REVEIL_DE_GAB", 1, 5)
     .add_clip("RAPH_ENTRE")
     .add_clip("GAB_DORT_ZOOM")
     .add_clip("RAPH_ENTRE")
-    .add_clip("GAB_DORT_ZOOM")
-    .add_clip("RAPH_ENTRE")
-    .add_clip("GAB_DORT_ZOOM")
-    .add_clip("RAPH_ENTRE")
-    .add_clip("GAB_DORT_ZOOM")
-    .add_clip("RAPH_ENTRE")
-    .add_clip("GAB_DORT_ZOOM")
-    .add_clip("RAPH_ENTRE")
     .add_choice("BOUCLE1", "Boucle infinie", "REVEIL_DE_GAB")
     .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB")
     .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB")
     .add_choice("BOUCLE2", "Boucle infinie aussi", "REVEIL_DE_GAB")
     .set_default_choice(1))
-
-
 
 
 # ------------------ CHECK -------------------------------

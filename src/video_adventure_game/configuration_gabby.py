@@ -3,14 +3,14 @@ from clip import ClipResources
 from scene import Scene, SceneResources
 
 # Screen size
-screen_size=(800,450)
+screen_size = (800,450)
 
 # debug mode
 debug_mode = True
 
 # assets and cache
-assets_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
-cache_dir=os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
+assets_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
+cache_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
 
 # Clip inventory
 clips = ClipResources(assets_dir,cache_dir)
