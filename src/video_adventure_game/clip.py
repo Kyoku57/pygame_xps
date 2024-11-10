@@ -38,6 +38,7 @@ class Clip:
         # video clip
         self.clip = clip
         # Manage end time
+        self.frame_duration = 1/25
         self.start = start
         source_duration = self.clip.duration
         if end == 0:
@@ -59,16 +60,23 @@ class Clip:
         self.audio_filename = os.path.join(self.cache_path,
             self.id+"."+str(self.start)+"."+str(self.end)+".wav")
         self.cache_audio()
+        self.surface = pygame.surfarray.make_surface(self.frame.swapaxes(0, 1))
 
     def reset(self):
-        self.time=0
+        self.time = 0
        
     def update_and_return_isfinished(self):
-        """Obtain the right frame"""
-        self.frame=self.clip.get_frame(t=self.time)
-        self.time += 1/25
-        is_finished = self.time > self.duration
-        if is_finished:
+        """Obtain the right frame and audio trigger
+        """
+        # frame to show
+        self.frame = self.clip.get_frame(t=self.time)
+        # audio to reset
+        if self.time == 0:
+            self.audio.play()
+        # Increment and detect end of the clip
+        self.time += self.frame_duration
+        is_finished = self.time > (self.duration+(self.frame_duration/2)) # Dirty hack to bypass float approx
+        if is_finished is True:
             self.reset()
         return is_finished
     
@@ -81,33 +89,15 @@ class Clip:
             print(f"{self.audio_filename} already cached !")
         # cache audio object
         if self.audio is None:
-            self.audio=pygame.mixer.Sound(self.audio_filename)
-
-class ClipManager:
-    """Object that manage which clip to render"""
-    def __init__(self, first_clip):
-        self.current_clip=first_clip
-        self.surface=pygame.surfarray.make_surface(self.current_clip.frame.swapaxes(0, 1))
-
-    def update_and_return_isfinished(self):
-        """Update frame for Surface buffer and play audio if necessary"""
-        if self.current_clip.time == 0:
-            self.play_associated_audio()
-        return self.current_clip.update_and_return_isfinished()
-
-    def get_surface(self):
-        """Export updated Surface"""
-        self.surface=pygame.surfarray.make_surface(self.current_clip.frame.swapaxes(0, 1)) # TODO Pas genial
-        pygame.surfarray.blit_array(self.surface, self.current_clip.frame.swapaxes(0, 1))
-        return self.surface
-    
-    def play_associated_audio(self):
-        """Play audio"""
-        self.current_clip.audio.play()
+            self.audio = pygame.mixer.Sound(self.audio_filename)
 
     def get_progress(self):
-        return (self.current_clip.time)*100/(self.current_clip.duration)
+        return (self.time)*100/(self.duration)
     
     def get_time_by_duration(self):
-        return self.current_clip.time, self.current_clip.duration
-     
+        return self.time, self.duration
+    
+    def get_surface(self):
+        """Export updated Surface"""
+        pygame.surfarray.blit_array(self.surface, self.frame.swapaxes(0, 1))
+        return self.surface

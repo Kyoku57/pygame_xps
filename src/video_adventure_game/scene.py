@@ -1,5 +1,5 @@
 import pygame
-from clip import ClipManager
+from clip import Clip
 
 class Choice:
     def __init__(self, id, description, next_scene):
@@ -93,7 +93,7 @@ class SceneManager:
         self.next_scene = self.current_scene
         # Clips
         self.clip_index = 0
-        self.clip_manager = ClipManager(self.current_scene.ordered_clips[self.clip_index])
+        self.current_clip = self.current_scene.ordered_clips[self.clip_index]
         # Status
         self.is_starting = True
         self.__is_never_updated = True
@@ -106,7 +106,7 @@ class SceneManager:
             self.is_starting = False
 
         # Update clip and detect it to go next clip or next scene
-        if self.clip_manager.update_and_return_isfinished():
+        if self.current_clip.update_and_return_isfinished():
             # next clip if clip is finished
             self.clip_index += 1
             # is last clip of the scene ?
@@ -116,18 +116,17 @@ class SceneManager:
                 self.is_starting = True
             # Next clip
             next_clip = self.current_scene.ordered_clips[self.clip_index]
-            self.clip_manager.current_clip = next_clip
+            self.current_clip = next_clip
             
-
     def set_next_scene(self, scene_id):
         self.next_scene = self.scene_resources.get(scene_id)
 
     def get_surface(self, screen_size):
         """Export updated Surface depends on screen size for scale"""
-        if (self.clip_manager.get_surface().get_size() == screen_size):
-            return self.clip_manager.get_surface()
+        if (self.current_clip.get_surface().get_size() == screen_size):
+            return self.current_clip.get_surface()
         else:
-            ratio_source = self.clip_manager.get_surface().get_size()[0]/self.clip_manager.get_surface().get_size()[1]
+            ratio_source = self.current_clip.get_surface().get_size()[0]/self.current_clip.get_surface().get_size()[1]
             ratio_screen = screen_size[0]/screen_size[1]
             if ratio_source > ratio_screen:
                 target_width = screen_size[0]
@@ -135,10 +134,10 @@ class SceneManager:
             else:
                 target_height = screen_size[1]
                 target_width = screen_size[1] * ratio_source
-            return pygame.transform.scale(self.clip_manager.get_surface(), (target_width, target_height))
+            return pygame.transform.scale(self.current_clip.get_surface(), (target_width, target_height))
 
     def get_time_by_duration(self):
-        clip_time, clip_duration = self.clip_manager.get_time_by_duration()
+        clip_time, clip_duration = self.current_clip.get_time_by_duration()
         scene_time = self.current_scene.duration_to_index(self.clip_index) + clip_time
         return scene_time, self.current_scene.duration()
  
