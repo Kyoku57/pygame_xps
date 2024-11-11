@@ -31,7 +31,7 @@ ffmpeg -i myvideo.mp4 -s 800x450 -filter:v fps=25 myvideo.resized.mp4
 
 ## How to structure the game
 
-There are two ways of implement the scenario
+There are two ways to structure and describe the scenario
 - usage of the default structure (used for packaging - see later):
     - put your ```*.mp4``` files into ```./assets/``` directory
     - the ```./cache/``` directory will be used for audio cache
