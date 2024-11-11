@@ -1,5 +1,5 @@
 import pygame
-import time
+import globals
 from scene import Scene, Choice
 
 BANNER_COLOR = (0,0,0)
@@ -60,7 +60,6 @@ class MenuChoice:
         self.surface.blit(self.rendered_text, text_rec)
         return self.surface
 
-
 class Menu:
     """Menu"""
     def __init__(self, screen_size):
@@ -85,9 +84,6 @@ class Menu:
         self.animation_hide = False
         # choices
         self.menu_choices = []
-        # Font initialisation
-        t0 = time.time()
-        print('time needed for Font creation :', time.time()-t0)
         # surfaces
         self.surface = pygame.Surface(dimension, pygame.SRCALPHA)
         self.banner = pygame.Rect(0, 0, self.width, self.height)

@@ -1,24 +1,54 @@
+import os
 import pygame
+import globals
 from menu import Menu
 from history import History
 from scene import SceneManager
 from tools import update_splash_text
 
-# Global variables
-BLACK = (0,0,0)
-
 # Parse arguments
 import argparse
 parser = argparse.ArgumentParser(description='PyGame-VideoGame', epilog='Try it and good luck !!!')
-parser.add_argument("-f", "--fullscreen", action="store_true", help="fullscreen")
-parser.add_argument("-d", "--debug", action="store_true", help="debug mode")
+parser.add_argument("-f", "--fullscreen", 
+                    action="store_true", help="Fullscreen mode")
+parser.add_argument("-d", "--debug", 
+                    action="store_true", help="Debug mode")
+parser.add_argument("-a", "--assets-dir", 
+                    help="Directory where the video assets are")
+parser.add_argument("-c", "--cache-dir", 
+                    help="Directory where place the audio cache from VideoClip")
+parser.add_argument("-F", "--config-file",
+                    help="Configuration file")
 args = vars(parser.parse_args())
+
+# Override configuration parameters
 full_screen = args["fullscreen"]
 debug_mode = args["debug"]
-
-# Parse configuration and check
+if args["assets_dir"] is not None:
+    if not os.path.exists(os.path.realpath(args["assets_dir"])):
+        raise Exception(f"WARNING: directory {args["assets_dir"]} does not exist.")
+    globals.assets_dir = os.path.realpath(args["assets_dir"])
+if args["cache_dir"] is not None:
+    if not os.path.exists(os.path.realpath(args["cache_dir"])):
+        raise Exception(f"WARNING: directory {args["cache_dir"]} does not exist.")
+    globals.cache_dir = os.path.realpath(args["cache_dir"])
+        
+# Parse configuration and check coherence
 update_splash_text('Cache creation ...')
-from configuration_test import scene_resources, screen_size
+if args["config_file"] is not None:
+    if not os.path.exists(os.path.realpath(args["config_file"])):
+        raise Exception(f"WARNING: directory {args["cache_dir"]} does not exist.")
+    else:
+        import importlib.util
+        import sys
+        spec = importlib.util.spec_from_file_location("configuration", os.path.realpath(args["config_file"]))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["configuration"] = module
+        spec.loader.exec_module(module)
+        scene_resources=module.scene_resources
+        screen_size=module.screen_size
+else:       
+    from configuration import scene_resources, screen_size
 scene_resources.check_coherence()
 update_splash_text('Cache and verification DONE !')
 
@@ -137,7 +167,7 @@ while running:
     scene_manager.update_and_return_isfinished()
 
     # Draw the surface onto the window
-    screen.fill(BLACK)
+    screen.fill(globals.Color.BLACK)
     scene_surface = scene_manager.get_surface(screen_size)
     screen.blit(scene_surface, scene_surface.get_rect(center=(screen_size[0]/2, screen_size[1]/2)))
     screen.blit(menu.get_surface(), (menu.left, menu.top))

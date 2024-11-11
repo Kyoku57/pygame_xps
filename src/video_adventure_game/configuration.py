@@ -1,21 +1,17 @@
-import os
+import globals
 from clip import ClipResources
 from scene import Scene, SceneResources
 
-# Screen size
+# Windowed screen size
 screen_size = (830,500)
 
-# assets and cache
-assets_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
-cache_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "cache")
-
 # Clip inventory
-clips = ClipResources(assets_dir,cache_dir)
-clips.add("CLIP_1", "PXL_20241102_124442799.TSR.mp4", 0,2)
-clips.add("CLIP_2", "PXL_20241102_124508854.TSR.mp4", 0,2)
-clips.add("CLIP_3", "PXL_20241102_124530530.TSR.mp4", 0,2)
+clips = ClipResources(globals.assets_dir, globals.cache_dir)
+clips.add("CLIP_1", "clip_video1.mp4", 0,2)
+clips.add("CLIP_2", "clip_video2.mp4", 0,2)
+clips.add("CLIP_3", "clip_video3.mp4", 0,2)
 
-# Create Scenes inventory
+# Scenes inventory
 scene_resources = SceneResources()
 
 scene_resources.add(Scene(clips, "SCENE_1", 1, 5)
