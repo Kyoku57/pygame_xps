@@ -43,10 +43,15 @@ TODO
 
 ## Launch the game 
 
-```
-python main.py # use default configuration with assets and cache directories
-python main.py --fullscreen # start game in full screen
-python main.py --help # start game with debug mode
+```bash
+# use default configuration with assets and cache directories
+python main.py 
+
+# start game in full screen
+python main.py --fullscreen 
+
+# start game with debug mode
+python main.py --debug
 ```
 
 The main program analyse the configuration file to register clip
