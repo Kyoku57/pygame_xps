@@ -1,19 +1,35 @@
 import pygame
 from menu import Menu
-from configuration_test import scene_resources, screen_size, debug_mode, full_screen
 from history import History
 from scene import SceneManager
+from tools import update_splash_text
 
 # Global variables
 BLACK = (0,0,0)
 
+# Parse arguments
+import argparse
+parser = argparse.ArgumentParser(description='PyGame-VideoGame', epilog='Try it and good luck !!!')
+parser.add_argument("-f", "--fullscreen", action="store_true", help="fullscreen")
+parser.add_argument("-d", "--debug", action="store_true", help="debug mode")
+args = vars(parser.parse_args())
+full_screen = args["fullscreen"]
+debug_mode = args["debug"]
+
+# Parse configuration and check
+update_splash_text('Cache creation ...')
+from configuration_test import scene_resources, screen_size
+scene_resources.check_coherence()
+update_splash_text('Cache and verification DONE !')
+
 # Initialize Pygame
 pygame.init()
+update_splash_text('Game initialized ...')
 
 # Prepare SCREEN
 if full_screen is False:
     screen = pygame.display.set_mode(screen_size, 0, 32)
-    #screen=pygame.display.set_mode(screen_size, pygame.RESIZABLE) # Forget it :-)
+    #screen=pygame.display.set_mode(screen_size, pygame.RESIZABLE) # Forget it :-D
 else:
     screen=pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 pygame.display.set_caption("Clip/Scene test")
@@ -32,6 +48,7 @@ menu = Menu(screen_size)
 running = True
 TICK_VALUE = 25  # 25 tick per second // 0.04 secondes per frame
 clock = pygame.time.Clock()
+update_splash_text('Game run !!!', close=True)
 while running:
     clock.tick(TICK_VALUE)
 

@@ -4,10 +4,6 @@ from scene import Scene, SceneResources
 
 # Screen size
 screen_size = (830,500)
-full_screen = False
-
-# debug mode
-debug_mode = True
 
 # assets and cache
 assets_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "assets")
@@ -58,6 +54,3 @@ scene_resources.add(Scene(clips, "SCENE_4", 1, 5)
     .add_clip("CLIP_3")
     .add_clip("CLIP_2")
     .add_choice("CHOIX_0", "Go scene 1", "SCENE_1"))
-
-# ------------------ CHECK -------------------------------
-scene_resources.check_coherence()
