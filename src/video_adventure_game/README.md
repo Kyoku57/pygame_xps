@@ -9,9 +9,15 @@ Add the following dependencies.
 - Python >= 3.12 : https://www.python.org/downloads/
 
 ```bash
+# Clone package with git 
+git clone https://github.com/Kyoku57/pygame_xps.git
+# OR download direct https://github.com/Kyoku57/pygame_xps/archive/refs/heads/main.zip and unzip
+cd pygame_xps/src/video_adventure_game
+
+# install dependencies
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-# or 
+# OR if you want to install the three dependencies by yourselves
 python -m pip install pygame moviepy pyinstaller
 ```
 
