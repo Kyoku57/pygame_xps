@@ -121,7 +121,7 @@ while running:
         debug_buffer.append("--------------------------------------------------------------------------------------------------------")
         debug_buffer.append(f"Tick value        : {TICK_VALUE}")
         debug_buffer.append(f"Clip              : {scene_manager.current_clip.id.ljust(20)} {clip_time:.2f} / {clip_duration:.2f}")
-        debug_buffer.append(f"Scene             : {scene_manager.current_scene.id.ljust(20)} {scene_time:.2f} / {scene_duration:.2f}")
+        debug_buffer.append(f"Scene             : {scene_manager.current_scene.id.ljust(20)} {scene_time:.2f} / {scene_duration:.2f}")  
         debug_buffer.append(f"Next Scene        : {scene_manager.next_scene.id}")
         debug_buffer.append(f"Choices           : {" | ".join([f"{choice.id}{"(H)" if choice.condition is False else ""}".ljust(20) for choice in scene_manager.current_scene.choices])}")
         debug_buffer.append(f"Menu choice       : {" | ".join([f"{menu_choice.choice.id}".ljust(20) for menu_choice in menu.menu_choices])}")

@@ -1,20 +1,69 @@
-# Some experiment with PyGame
+# Video Adventure Game
 
-## Install
+The aim of this little project is to offer a way to create a video adventure game with PyGame.
+
+## Requirements
+
+Add the following dependencies. 
+
+- Python >= 3.12 : https://www.python.org/downloads/
 
 ```bash
 python -m pip install --upgrade pip
-python -m pip install pygame
-python -m pip install moviepy
+python -m pip install -r requirements.txt
+# or 
+python -m pip install pygame moviepy pyinstaller
 ```
 
-## Resize video
+## Prepare assets
+
+The assets can be placed by default into the ```assets/``` directory
+
+The game is calibrated to run video at the framerate of 25 img/sec. You can use the following ffmpeg command to resize video and put framerate to 25.
 
 ```bash
-ffmpeg -i PXL_20241102_124716730.TS.mp4 -s 800x450 -filter:v fps=25 PXL_20241102_124716730.TS.resized.mp4
+ffmpeg -i myvideo.mp4 -s 800x450 -filter:v fps=25 myvideo.resized.mp4
 ```
 
-## Random links
+For the game, you can adapt and launch the ```assets/resize.sh``` script to batch video adaptations.
+
+## How to use the ```configuration.py``` file
+
+### Clips declaration
+
+TODO
+
+### Scene declaration
+
+TODO
+
+### Choices into 
+
+TODO
+
+## Launch the game 
+
+```
+python main.py # use default configuration with assets and cache directories
+python main.py --fullscreen # start game in full screen
+python main.py --help # start game with debug mode
+```
+
+The main program analyse the configuration file to register clip
+
+## Build executable
+
+```bash
+pyinstaller main.spec
+```
+
+
+
+
+## References
+
+
+### Pygame
 
 - https://ryanstutorials.net/pygame-tutorial/pygame-keyboard-input.php
 - https://pygame.readthedocs.io/en/latest/rect/rect.html
@@ -28,4 +77,12 @@ ffmpeg -i PXL_20241102_124716730.TS.mp4 -s 800x450 -filter:v fps=25 PXL_20241102
 - https://www.pygame.org/docs/ref/rect.html#pygame.Rect.collideobjects
 - https://medium.com/featurepreneur/extracting-audio-from-video-using-pythons-moviepy-library-e351cd652ab8 
 - https://stackoverflow.com/questions/23982907/how-to-center-text-in-pygame 
+
+### FFmpeg
+
 - https://www.malekal.com/comment-utiliser-ffmpeg-exemples/
+
+### Pyinstaller
+- https://pyinstaller.org/en/stable/
+- https://pyinstaller.org/en/stable/spec-files.html
+- https://pyinstaller.org/en/stable/advanced-topics.html#pyi-splash-module-detailed
