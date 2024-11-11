@@ -225,6 +225,12 @@ main.exe --assets-dir=<path_to_assets> --config-file=<path_to_scenario_file>
 
 > **NOTE:** it depends if you want to release the game as a directory with main, scenario and assets seperatly or all in the .exe file.
 
+## More customization
+
+You can change the splash screen configuration:
+- edit the ```splash.png``` image or create a new PNG file.
+- edit the ```main.spec``` to the Splash section to edit font, size, ...
+
 
 ## References
 
