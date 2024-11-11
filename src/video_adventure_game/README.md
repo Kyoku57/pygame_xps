@@ -123,7 +123,7 @@ scene_resources.add(Scene(clips, "SCENE_1", menu_start_time=1, menu_duration=5)
     .set_default_choice("CHOIX_2_AGAIN"))
 ```
 
-**Step 3:** Declare others Scenes
+**Step 4:** Declare others Scenes
 
 ```python
 # New scene with 4 choice, the first is the default one
@@ -179,7 +179,7 @@ python main.py --assets-dir=<path_to_assets>\
   --config-file=<path_to_scenario_file>
 ```
 
-The main program analyse the scenario file to register clip, create audio cache, calculate menu timing. Error are raised if:
+The main program analyses the scenario file to register clips, create audio cache, calculate menu timing. Errors are raised if:
 - assets_dir, cache_dir, scenario file missing,
 - Clips or Scenes don't exist,
 - Clip ID or Scene ID are duplicated,
@@ -191,7 +191,7 @@ If no error, the game is launched ! Congratulations !
 
 ## Build executable
 
-You can build a .exe version of your game with pyinstaller module.
+You can build a .exe version of your game with pyinstaller module.  
 The version depends on the installed version of Python and Operating System.
 
 ### First option - default configuration
