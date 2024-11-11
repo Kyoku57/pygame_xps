@@ -89,7 +89,7 @@ We want a first scene that launch the following clips:
 - CLIP_3,
 - CLIP_2
 
-The menu appears at the 
+The menu appears at the first second of the scene and last 5 secondes. If no choice is selected, it will be the default one or the first one.
 
 And we want the following available Choices:
 - Go scene 2
