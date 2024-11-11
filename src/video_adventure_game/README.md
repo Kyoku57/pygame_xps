@@ -44,7 +44,7 @@ There are two ways to structure and describe the scenario
 
 ## How to edit the scenario file
 
-**Requirements**
+### Requirements
 
 - Put your ```*.mp4``` files into the default ```./assets/``` directory or create a new one,
 - If needed, use the ```resize.sh``` scripts to batch resize your files,
@@ -52,7 +52,7 @@ There are two ways to structure and describe the scenario
 
 For next example, we want 4 Scenes linked each other to create the scenario.
 
-**Step 1:** Edit scenario and start with mandatory imports
+### Step 1: Edit scenario and start with mandatory imports
 
 ```python
 import globals
@@ -65,7 +65,7 @@ Define the windowed mode resolution
 screen_size = (830,500) # can be clips resolution but can be other values too
 ```
 
-**Step 2:** Declare your clips
+### Step 2: Declare your clips
 
 We declare 3 clips from the different videos (but can be the same)
 
@@ -77,7 +77,7 @@ clips.add("CLIP_3", "clip_video3.mp4", 0, 2) # start and end are optional
 ```
 > **NOTE:** the ClipID should be unique. The clips are cached in memory.
 
-**Step 3:** Declare your first Scene
+### Step 3: Declare your first Scene
 
 ```python
 scene_resources = SceneResources()
@@ -129,7 +129,7 @@ scene_resources.add(Scene(clips, "SCENE_1", menu_start_time=1, menu_duration=5)
     .set_default_choice("CHOIX_2_AGAIN"))
 ```
 
-**Step 4:** Declare others Scenes
+### Step 4: Declare others Scenes
 
 ```python
 # New scene with 4 choice, the first is the default one
