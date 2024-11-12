@@ -23,9 +23,10 @@ pyz = PYZ(a.pure)
 splash = Splash('splash.png',
                 binaries=a.binaries,
                 datas=a.datas,
-                text_pos=(10, 50),
-                text_size=12,
-                text_color='black')
+                text_pos=(30, 240),
+                text_size=16,
+                max_img_size=(800, 800),
+                text_color='white')
 
 exe = EXE(
     pyz,

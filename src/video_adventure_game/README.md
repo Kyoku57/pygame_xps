@@ -2,24 +2,52 @@
 
 The aim of this little project is to offer a way to create a video adventure game with PyGame.
 
+![SplashScreen](./splash.png)
+
 ## Requirements
 
-Add the following dependencies. 
+Install Python >= 3.12 : https://www.python.org/downloads/
 
-- Python >= 3.12 : https://www.python.org/downloads/
-
+Get game from GitHub:
 ```bash
 # Clone package with git 
 git clone https://github.com/Kyoku57/pygame_xps.git
-# OR download direct https://github.com/Kyoku57/pygame_xps/archive/refs/heads/main.zip and unzip
 cd pygame_xps/src/video_adventure_game
+```
+OR download direct and unzip from:
+https://github.com/Kyoku57/pygame_xps/archive/refs/heads/main.zip  
 
+Go into ```pygame_xps/src/video_adventure_game``` directory.
+
+Install dependencies:
+```bash
 # install dependencies
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 # OR if you want to install the three dependencies by yourselves
 python -m pip install pygame moviepy pyinstaller
 ```
+
+## Quick run
+
+The project is provided with a default scenario and clips.
+
+To test it, just run the following command
+```bash
+python main.py
+# or 
+python main.py --fullscreen --debug
+```
+
+or if you want a packaged version with splash screen, run the following commands
+```bash
+pyinstaller main.spec
+```
+
+After build, double-click on the ```main``` executable in the ```./dist/``` directory.  
+
+> **NOTE:** You can create a shortcut or use command line to add option like ```--fullscreen``` or ```--debug``` during launch.
+
 
 ## Some notes before starting ...
 
@@ -67,13 +95,20 @@ screen_size = (830,500) # can be clips resolution but can be other values too
 
 ### Step 2: Declare your clips
 
-We declare 3 clips from the different videos (but can be the same)
+We declare clips from the different videos (but can be the same)
 
 ```python
 clips = ClipResources(globals.assets_dir, globals.cache_dir)
-clips.add("CLIP_1", "clip_video1.mp4", start=0, end=2)
-clips.add("CLIP_2", "clip_video2.mp4", 0, 2) # start and end are optional
-clips.add("CLIP_3", "clip_video3.mp4", 0, 2) # start and end are optional
+clips.add(clip_id="SCENE_1_CLIP_1", video_filename="source_video_1.mp4", start=1, end=5)
+clips.add("SCENE_1_CLIP_2", "source_video_1.mp4", 6, 10)
+clips.add("SCENE_1_CLIP_3", "source_video_1.mp4", 12, 16)
+clips.add("SCENE_2_CLIP_1", "source_video_2.mp4", 1, 5)
+clips.add("SCENE_2_CLIP_2", "source_video_2.mp4", 6, 12)
+clips.add("SCENE_2_CLIP_3", "source_video_2.mp4", 13,17)
+clips.add("SCENE_3_CLIP_1", "source_video_3.mp4", 2,6)
+clips.add("SCENE_3_CLIP_2", "source_video_3.mp4", 8,12)
+clips.add("SCENE_3_CLIP_3", "source_video_3.mp4", 14,18)
+clips.add("SCENE_4_CLIP_123", "source_video_4.mp4")
 ```
 > **NOTE:** the ClipID should be unique. The clips are cached in memory.
 
@@ -84,29 +119,26 @@ scene_resources = SceneResources()
 ```
 
 We want a first scene that launch the following clips:
-- CLIP_1,
-- CLIP_2,
-- CLIP_3,
-- CLIP_2
+- SCENE_1_CLIP_1 > SCENE_1_CLIP_2 > SCENE_1_CLIP_3 
 
-The menu appears at the first second of the scene and last 5 secondes. If no choice is selected, it will be the default one or the first one.
+The menu appears at the third second of the scene and last 6 secondes. If no choice is selected, it will be the default one or the first one.
 
 And we want the following available Choices:
 - Go scene 2
-    - Choice identifier for history: CHOIX_2
-    - Go to scene identifier: SCENE_2
+    - ChoiceIdentifier for history: CHOIX_2
+    - Go to SceneIdentifier: SCENE_2
     - Condition: Always True
 - Go scene 3
-    - Choice identifier for history: CHOIX_3
-    - Go to scene identifier: SCENE_3
+    - ChoiceIdentifier for history: CHOIX_3
+    - Go to SceneIdentifier: SCENE_3
     - Condition: Always True
 - Go scene 2 (bis)
-    - Choice identifier for history: CHOIX_2_AGAIN
-    - Go to scene identifier: SCENE_3
-    - Condition: the history of event contains Choice idendifier "CHOIX_0"
+    - ChoiceIdentifier for history: CHOIX_2_AGAIN
+    - Go to SceneIdentifier: SCENE_3
+    - Condition: the history of Events contains ChoiceIdendifier "CHOIX_0"
 - Go scene 4
     - Choice identifier for history: CHOIX_4
-    - Go to scene identifier: SCENE_4
+    - Go to SceneIdentifier: SCENE_4
     - Condition: Always True
 
 Go scene 2 (bis) will be the default choice (hidden or not).
@@ -114,55 +146,47 @@ Go scene 2 (bis) will be the default choice (hidden or not).
 In the scenario file, the code looks like
 
 ```python
-scene_resources.add(Scene(clips, "SCENE_1", menu_start_time=1, menu_duration=5)
-    # add clips
-    .add_clip("CLIP_1") 
-    .add_clip("CLIP_2")
-    .add_clip("CLIP_3")
-    .add_clip("CLIP_2")
-    # add choices (some can be visible only with condition)
-    .add_choice("CHOIX_2", "Go scene 2", "SCENE_2")
-    .add_choice("CHOIX_3", "Go scene 3", "SCENE_3")
-    .add_choice("CHOIX_2_AGAIN", "Go scene 2 (bis)", "SCENE_2", condition="""history.event_has_choice_id("CHOIX_0")""")
-    .add_choice("CHOIX_4", "Go scene 4", "SCENE_4")
-    # set default choice by its identifier
-    .set_default_choice("CHOIX_2_AGAIN"))
+scene_resources.add(Scene(clips_resources=clips, scene_id="SCENE_1",  menu_start_time=3, menu_duration=6)
+    .add_clip("SCENE_1_CLIP_1")
+    .add_clip("SCENE_1_CLIP_2")
+    .add_clip("SCENE_1_CLIP_3")
+    .add_choice("CHOIX_2", "Go Scene 2", "SCENE_2")
+    .add_choice("CHOIX_3", "Go Scene 3", "SCENE_3")
+    .add_choice("CHOIX_2_BIS", "Go Scene 2 (bis)", "SCENE_2", """history.event_has_choice_id("CHOIX_0")""")
+    .add_choice("CHOIX_4", "Go Scene 4", "SCENE_4")
+    .set_default_choice("CHOIX_2_BIS"))
 ```
 
 ### Step 4: Declare others Scenes
 
 ```python
-# New scene with 4 choice, the first is the default one
+# New scene with 4 choice, the second is the default one
 scene_resources.add(Scene(clips, "SCENE_2", 1, 5)
-    .add_clip("CLIP_1")
-    .add_clip("CLIP_2")
-    .add_clip("CLIP_3")
-    .add_clip("CLIP_2")
-    .add_choice("CHOIX_1", "Go scene 1", "SCENE_1")
-    .add_choice("CHOIX_2", "Go scene 2", "SCENE_2")
-    .add_choice("CHOIX_3", "Go scene 3", "SCENE_3")
-    .add_choice("CHOIX_3", "Go scene 4", "SCENE_4")
-    .set_default_choice("CHOIX_1"))
+scene_resources.add(Scene(clips, "SCENE_2", 5, 7)
+    .add_clip("SCENE_2_CLIP_1")
+    .add_clip("SCENE_2_CLIP_2")
+    .add_clip("SCENE_2_CLIP_3")
+    .add_choice("CHOIX_1", "Go Scene 1", "SCENE_1")
+    .add_choice("CHOIX_2", "Go Scene 2", "SCENE_2")
+    .add_choice("CHOIX_3", "Go Scene 3", "SCENE_3")
+    .add_choice("CHOIX_3", "Go Scene 4", "SCENE_4")
+    .set_default_choice("CHOIX_2"))
 
 # New scene but there is only one choice
 # Menu will not show when only one visible choice.
-scene_resources.add(Scene(clips, "SCENE_3", 1, 5)
-    .add_clip("CLIP_1")
-    .add_clip("CLIP_2")
-    .add_clip("CLIP_3")
-    .add_clip("CLIP_2")
-    .add_choice("CHOIX_0", "Go scene 1", "SCENE_1")
+scene_resources.add(Scene(clips, "SCENE_3", 3, 6)
+    .add_clip("SCENE_3_CLIP_1")
+    .add_clip("SCENE_3_CLIP_2")
+    .add_clip("SCENE_3_CLIP_3")
+    .add_choice("CHOIX_0", "Go Scene 1", "SCENE_1")
     .set_default_choice("CHOIX_0"))
 
 # Same as SCENE_3 with the omission of the default choice
 # Default choice can be omitted because there is only one choice
 # Menu will not show when only one visible choice.
 scene_resources.add(Scene(clips, "SCENE_4", 1, 5)
-    .add_clip("CLIP_1")
-    .add_clip("CLIP_2")
-    .add_clip("CLIP_3")
-    .add_clip("CLIP_2")
-    .add_choice("CHOIX_0", "Go scene 1", "SCENE_1"))
+    .add_clip("SCENE_4_CLIP_123")
+    .add_choice("CHOIX_0", "Go Scene 1", "SCENE_1"))
 ```
 
 Your scenario is ready !
