@@ -1,6 +1,7 @@
 import pygame
 import globals
 from scene import Scene, Choice
+from tools import update_splash_text
 
 BANNER_COLOR = (0,0,0)
 
@@ -74,6 +75,7 @@ class Menu:
         self.width,self.height = dimension
         self.margin = 10
         self.font_size = round(h/2)
+        update_splash_text(f"font is prepared in cache .. !")
         self.font=pygame.font.SysFont(None, self.font_size)
         # position
         self.left,self.top = init_position
@@ -89,6 +91,7 @@ class Menu:
         self.banner = pygame.Rect(0, 0, self.width, self.height)
         self.progress_bar_color = (255, 255, 255)
         self.progress_bar_rect = pygame.Rect(0,0,0,4)
+        update_splash_text(f"font is prepared in cache DONE !")
 
     def update_menu_choices_from_scene(self, scene: Scene, history):
         # Init

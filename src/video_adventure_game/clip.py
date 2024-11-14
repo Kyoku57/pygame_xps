@@ -1,6 +1,7 @@
 import os
 import pygame
 from moviepy.editor import VideoFileClip
+from tools import update_splash_text
 
 class ClipResources:
     """List of clips"""
@@ -15,10 +16,10 @@ class ClipResources:
         if clip_id in self.clips.keys():
             raise NameError(f"{clip.id} is already used !!!")
         if video_filename in self.video_cache.keys():
-            print(f"{video_filename} is already in video cache !!!")
+            update_splash_text(f"{video_filename} is already in video cache !!!")
         else:
             self.video_cache[video_filename]=VideoFileClip(os.path.join(self.assets_dir,video_filename))
-
+            update_splash_text(f"{video_filename} is added")
         clip=Clip(clip_id, self.cache_dir, self.video_cache[video_filename], start, end)
         self.clips[clip.id]=clip
 
@@ -84,8 +85,9 @@ class Clip:
         # cache intermediare file
         if not os.path.exists(self.audio_filename):
             self.clip.audio.write_audiofile(self.audio_filename)
+            update_splash_text(f"{self.audio_filename} added !")
         else:
-            print(f"{self.audio_filename} already cached !")
+            update_splash_text(f"{self.audio_filename} already cached !")
         # cache audio object
         if self.audio is None:
             self.audio = pygame.mixer.Sound(self.audio_filename)
