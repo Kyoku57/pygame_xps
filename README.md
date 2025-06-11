@@ -6,7 +6,9 @@ All this section contains very quick experimentations.
 
 | Name of the script            | Description
 |--                             |--
-| move_rect_with_keyboard.py    | Description
+| move_rect_with_keyboard.py    | Just a rectangle that moves with keyboard
+| move_rect_with_keyboard.py    | A Math Game with a man trying to not be eaten by a crocodile
+
 
 
 ## Video Adventure Game
