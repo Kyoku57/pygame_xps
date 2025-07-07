@@ -32,6 +32,7 @@ class GameOfLife:
         # Paramètres configurables
         self.grid_size = 20
         self.fill_percentage = 30  # Pourcentage de remplissage
+        self.iterations_per_second = 10  # Vitesse de simulation
         
         # État du jeu
         self.running = True
@@ -58,7 +59,7 @@ class GameOfLife:
         
         # Bouton pour remplir aléatoirement
         self.buttons['random'] = {
-            'rect': pygame.Rect(x_offset, 200, button_width, button_height),
+            'rect': pygame.Rect(x_offset, 250, button_width, button_height),
             'text': 'Remplir Aléatoirement',
             'color': GREEN,
             'hover_color': DARK_GREEN
@@ -66,7 +67,7 @@ class GameOfLife:
         
         # Bouton pour lancer la simulation
         self.buttons['simulate'] = {
-            'rect': pygame.Rect(x_offset, 250, button_width, button_height),
+            'rect': pygame.Rect(x_offset, 300, button_width, button_height),
             'text': 'Lancer Simulation',
             'color': BLUE,
             'hover_color': DARK_BLUE
@@ -74,7 +75,7 @@ class GameOfLife:
         
         # Bouton pour effacer
         self.buttons['clear'] = {
-            'rect': pygame.Rect(x_offset, 300, button_width, button_height),
+            'rect': pygame.Rect(x_offset, 350, button_width, button_height),
             'text': 'Effacer Grille',
             'color': RED,
             'hover_color': (200, 0, 0)
@@ -215,6 +216,27 @@ class GameOfLife:
         self.fill_minus_rect = pygame.Rect(20, y_offset + 25, 30, 25)
         self.fill_plus_rect = pygame.Rect(60, y_offset + 25, 30, 25)
         
+        # Vitesse de simulation
+        y_offset += 70
+        speed_text = self.small_font.render(f"Vitesse: {self.iterations_per_second} it/s", True, BLACK)
+        menu_surface.blit(speed_text, (20, y_offset))
+        
+        # Contrôles pour la vitesse
+        speed_minus = pygame.Rect(20, y_offset + 25, 30, 25)
+        speed_plus = pygame.Rect(60, y_offset + 25, 30, 25)
+        
+        pygame.draw.rect(menu_surface, WHITE, speed_minus)
+        pygame.draw.rect(menu_surface, BLACK, speed_minus, 2)
+        pygame.draw.rect(menu_surface, WHITE, speed_plus)
+        pygame.draw.rect(menu_surface, BLACK, speed_plus, 2)
+        
+        menu_surface.blit(minus_text, (30, y_offset + 30))
+        menu_surface.blit(plus_text, (70, y_offset + 30))
+        
+        # Stocker les rectangles pour les événements (coordonnées absolues)
+        self.speed_minus_rect = pygame.Rect(20, y_offset + 25, 30, 25)
+        self.speed_plus_rect = pygame.Rect(60, y_offset + 25, 30, 25)
+        
         # Boutons
         mouse_pos = pygame.mouse.get_pos()
         
@@ -237,7 +259,7 @@ class GameOfLife:
             menu_surface.blit(text, text_rect)
         
         # Informations sur l'état
-        y_offset = 350
+        y_offset = 400
         if self.simulating:
             status_text = self.small_font.render("Simulation en cours...", True, BLACK)
         else:
@@ -258,7 +280,8 @@ class GameOfLife:
             "  pour démarrer",
             "- Relâcher pour arrêter",
             "- Ajuster le % de remplissage",
-            "  puis cliquer 'Remplir'"
+            "  puis cliquer 'Remplir'",
+            "- Régler la vitesse en it/s"
         ]
         
         for i, instruction in enumerate(instructions):
@@ -299,6 +322,14 @@ class GameOfLife:
             elif hasattr(self, 'fill_plus_rect') and self.fill_plus_rect.collidepoint(pos):
                 if self.fill_percentage < 95:
                     self.fill_percentage += 5
+            
+            # Contrôles de vitesse
+            elif hasattr(self, 'speed_minus_rect') and self.speed_minus_rect.collidepoint(pos):
+                if self.iterations_per_second > 1:
+                    self.iterations_per_second -= 1
+            elif hasattr(self, 'speed_plus_rect') and self.speed_plus_rect.collidepoint(pos):
+                if self.iterations_per_second < 60:
+                    self.iterations_per_second += 1
         
         # Clic sur la grille
         elif x > MENU_WIDTH:
@@ -347,7 +378,7 @@ class GameOfLife:
             self.draw_menu()
             
             pygame.display.flip()
-            self.clock.tick(10)  # 10 FPS pour une vitesse de simulation raisonnable
+            self.clock.tick(self.iterations_per_second)  # Utilise la vitesse configurée
         
         pygame.quit()
         sys.exit()
